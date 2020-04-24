@@ -16,7 +16,6 @@
         <module>jmjrst.main</module>
     </modules>
 
-
     <repositories>
         <repository>
             <id>ipdNexus</id>
