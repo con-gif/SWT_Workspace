@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
@@ -21,7 +22,8 @@ import javax.swing.*;
 public class LayoutGalerieTest {
 	
 	private LayoutGalerie galerieUnderTest;
-	
+
+	private File resourceFolder;
 	private File fromFile;
 	private File toFile;
 
@@ -29,8 +31,11 @@ public class LayoutGalerieTest {
 	 * Initializes test object.
 	 */
 	@Before
-	public final void prepareTestResources(){
+	public final void prepareTestResources() throws URISyntaxException {
 		galerieUnderTest = new LayoutGalerie(null, null);
+		resourceFolder = new File(this.getClass().getResource(File.separator).toURI());
+		fromFile = new File(resourceFolder, "from");
+		toFile = new File(resourceFolder, "to");
 	}
 		
 	/**
@@ -38,13 +43,8 @@ public class LayoutGalerieTest {
 	 */
 	@Test
 	public final void testCopyFile() throws URISyntaxException {
-		
-		galerieUnderTest = new LayoutGalerie(null, null);
-		
+
 		try {
-			final File resourceFolder = new File(this.getClass().getResource(File.separator).toURI());
-			fromFile = new File(resourceFolder, "from");
-			toFile = new File(resourceFolder, "to");
 			
 			byte[] array = new byte[10];
 			new Random().nextBytes(array);
@@ -63,18 +63,38 @@ public class LayoutGalerieTest {
 			 		 
 			assertEquals(randomString, contents);
 		 }
-		 catch (IOException | URISyntaxException e) {
+		 catch (IOException e) {
 			fail();
 		 }
 		
 	}
 
 	/**
+	 *
+	 * @throws FileNotFoundException
+	 */
+	@Test
+	public final void testCopyDirectory() throws FileNotFoundException {
+
+	}
+
+	/**
+	 *
+	 * @throws FileNotFoundException
+	 */
+	@Test
+	public final void testCopyNonExistentFile() throws FileNotFoundException {
+
+	}
+	/**
 	 * Frees test object reference pointer.
 	 */
 	@After
 	public final void destroyTestResources(){
 		galerieUnderTest = null;
+		resourceFolder = null;
+		fromFile = null;
+		toFile = null;
 	}
 
 }
