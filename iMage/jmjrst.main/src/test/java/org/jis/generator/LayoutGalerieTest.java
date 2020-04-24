@@ -12,14 +12,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import javax.swing.*;
 
 public class LayoutGalerieTest {
 	
 	private LayoutGalerie galerieUnderTest;
 	
 	private File fromFile;
-	private File toFile; 
+	private File toFile;
+
+	/**
+	 * Initializes test object.
+	 */
+	@Before
+	public final void prepareTestResources(){
+		galerieUnderTest = new LayoutGalerie(null, null);
+	}
 		
 	/**
 	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
@@ -55,6 +67,14 @@ public class LayoutGalerieTest {
 			fail();
 		 }
 		
+	}
+
+	/**
+	 * Frees test object reference pointer.
+	 */
+	@After
+	public final void destroyTestResources(){
+		galerieUnderTest = null;
 	}
 
 }
