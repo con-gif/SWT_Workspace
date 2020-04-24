@@ -11,6 +11,10 @@
 
     <groupId>swt1</groupId>
     <artifactId>iMage</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>jmjrst.main</module>
+    </modules>
 
 
     <repositories>
