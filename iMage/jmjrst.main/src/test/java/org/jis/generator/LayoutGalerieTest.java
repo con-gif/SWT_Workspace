@@ -110,6 +110,37 @@ public class LayoutGalerieTest {
 	}
 
 	/**
+	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
+	 */
+	@Test
+	public final void testCopyFileDestinationExisting() throws URISyntaxException {
+
+		try {
+			byte[] array = new byte[10];
+			new Random().nextBytes(array);
+			String randomString = new String(array);
+
+			Files.writeString(fromPath, randomString);
+
+			new Random().nextBytes(array);
+			String destinationFiller = new String(array);
+			Files.writeString(toPath, destinationFiller);
+			
+			galerieUnderTest.copyFile(fromFile, toFile);
+
+
+			String contents = Files.readString(toPath);
+
+			assertEquals(randomString, contents);
+
+		}
+		catch (IOException e) {
+			fail();
+		}
+
+	}
+
+	/**
 	 * Frees test object reference pointer.
 	 */
 	@After
