@@ -22,13 +22,16 @@ import javax.swing.*;
 public class LayoutGalerieTest {
 	
 	private LayoutGalerie galerieUnderTest;
-
 	private File resourceFolder;
 	private File fromFile;
 	private File toFile;
 
+	private Path fromPath;
+	private Path toPath;
+
 	/**
 	 * Initializes test object.
+	 * @throws URISyntaxException
 	 */
 	@Before
 	public final void prepareTestResources() throws URISyntaxException {
@@ -36,6 +39,10 @@ public class LayoutGalerieTest {
 		resourceFolder = new File(this.getClass().getResource(File.separator).toURI());
 		fromFile = new File(resourceFolder, "from");
 		toFile = new File(resourceFolder, "to");
+
+		fromPath = FileSystems.getDefault().getPath(fromFile.getPath());
+		toPath = FileSystems.getDefault().getPath(toFile.getPath());
+
 	}
 		
 	/**
@@ -45,23 +52,19 @@ public class LayoutGalerieTest {
 	public final void testCopyFile() throws URISyntaxException {
 
 		try {
-			
 			byte[] array = new byte[10];
 			new Random().nextBytes(array);
 			String randomString = new String(array);
-		 			 
-			fromFile.createNewFile();
-			Path fromPath = FileSystems.getDefault().getPath(fromFile.getPath());
+
 			Files.writeString(fromPath, randomString);
-			 
 			galerieUnderTest.copyFile(fromFile, toFile);
-			 
+
 			assertTrue(toFile.exists());
-			 
-			Path toPath = FileSystems.getDefault().getPath(toFile.getPath());
+
 			String contents = Files.readString(toPath);
 			 		 
 			assertEquals(randomString, contents);
+
 		 }
 		 catch (IOException e) {
 			fail();
@@ -70,22 +73,42 @@ public class LayoutGalerieTest {
 	}
 
 	/**
-	 *
-	 * @throws FileNotFoundException
+	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
 	 */
 	@Test
-	public final void testCopyDirectory() throws FileNotFoundException {
+	public final void testCopyToNonExistentFile() throws URISyntaxException, FileNotFoundException {
+
+		try {
+
+			toFile.delete();
+			galerieUnderTest.copyFile(fromFile, toFile);
+
+
+		}
+		catch (IOException e) {
+			//throw new FileNotFoundException();
+		}
 
 	}
 
 	/**
-	 *
-	 * @throws FileNotFoundException
+	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
 	 */
 	@Test
-	public final void testCopyNonExistentFile() throws FileNotFoundException {
+	public final void testCopyFromNonExistentFile() throws URISyntaxException, FileNotFoundException {
+
+		try {
+
+			fromFile.delete();
+			galerieUnderTest.copyFile(fromFile, toFile);
+
+		}
+		catch (IOException e) {
+			//throw new FileNotFoundException();
+		}
 
 	}
+
 	/**
 	 * Frees test object reference pointer.
 	 */
@@ -93,8 +116,14 @@ public class LayoutGalerieTest {
 	public final void destroyTestResources(){
 		galerieUnderTest = null;
 		resourceFolder = null;
+
+		fromFile.delete();
+		toFile.delete();
 		fromFile = null;
 		toFile = null;
+
+		fromPath = null;
+		toPath = null;
 	}
 
 }
