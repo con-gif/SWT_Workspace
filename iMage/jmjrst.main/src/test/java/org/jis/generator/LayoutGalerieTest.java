@@ -49,8 +49,6 @@ public class LayoutGalerieTest {
 
 		fromPath = FileSystems.getDefault().getPath(fromFile.getPath());
 		toPath = FileSystems.getDefault().getPath(toFile.getPath());
-
-
 	}
 		
 	/**
@@ -75,7 +73,7 @@ public class LayoutGalerieTest {
 
 		 }
 		 catch (IOException e) {
-			//fail();
+			fail();
 		 }
 		
 	}
@@ -94,6 +92,7 @@ public class LayoutGalerieTest {
 
 		}
 		catch (IOException e) {
+			System.out.println("testCopyToNonExistentFile fails");
 			//throw new FileNotFoundException();
 		}
 
@@ -112,6 +111,7 @@ public class LayoutGalerieTest {
 
 		}
 		catch (IOException e) {
+			System.out.println("testCopyFromNonExistentFile fails");
 			//throw new FileNotFoundException();
 		}
 
@@ -140,11 +140,10 @@ public class LayoutGalerieTest {
 
 		}
 		catch (IOException e) {
-			//fail();
+			fail();
 		}
 
 	}
-
 
 	/**
 	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
@@ -159,18 +158,23 @@ public class LayoutGalerieTest {
 
 			Files.writeString(fromPath, randomString);
 
-			channel = new RandomAccessFile(fromFile, "rw").getChannel();
-			lock = channel.lock();
-			lock = channel.tryLock();
+			try {
+				channel = new RandomAccessFile(fromFile, "rw").getChannel();
+				lock = channel.lock();
+				lock = channel.tryLock();
 
-			galerieUnderTest.copyFile(fromFile, toFile);
+				galerieUnderTest.copyFile(fromFile, toFile);
+
+			} catch (IOException | OverlappingFileLockException e) {
+				lock.release();
+				channel.close();
+				throw new IOException();
+			}
 			String contents = Files.readString(toPath);
 			assertEquals(randomString, contents);
 
-			lock.release();
-			channel.close();
-
-		} catch (IOException | OverlappingFileLockException e) {
+		} catch (IOException e) {
+			System.out.println("testCopyFromReadLockedFile fails");
 			//fail();
 		}
 	}
@@ -188,18 +192,23 @@ public class LayoutGalerieTest {
 
 			Files.writeString(toPath, randomString);
 
-			channel = new RandomAccessFile(toFile, "rw").getChannel();
-			lock = channel.lock();
-			lock = channel.tryLock();
+			try {
+				channel = new RandomAccessFile(toFile, "rw").getChannel();
+				lock = channel.lock();
+				lock = channel.tryLock();
 
-			galerieUnderTest.copyFile(fromFile, toFile);
+				galerieUnderTest.copyFile(fromFile, toFile);
+
+			} catch (IOException | OverlappingFileLockException e) {
+				lock.release();
+				channel.close();
+				throw new IOException();
+			}
 			String contents = Files.readString(toPath);
 			assertEquals(randomString, contents);
 
-			lock.release();
-			channel.close();
-
-		} catch (IOException | OverlappingFileLockException e) {
+		} catch (IOException e) {
+			System.out.println("testCopyToReadLockedFile fails");
 			//fail();
 		}
 	}
