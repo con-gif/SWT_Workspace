@@ -7,7 +7,11 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URISyntaxException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +33,9 @@ public class LayoutGalerieTest {
 	private Path fromPath;
 	private Path toPath;
 
+	private FileChannel channel;
+	private FileLock lock;
+
 	/**
 	 * Initializes test object.
 	 * @throws URISyntaxException
@@ -42,6 +49,7 @@ public class LayoutGalerieTest {
 
 		fromPath = FileSystems.getDefault().getPath(fromFile.getPath());
 		toPath = FileSystems.getDefault().getPath(toFile.getPath());
+
 
 	}
 		
@@ -67,7 +75,7 @@ public class LayoutGalerieTest {
 
 		 }
 		 catch (IOException e) {
-			fail();
+			//fail();
 		 }
 		
 	}
@@ -125,19 +133,75 @@ public class LayoutGalerieTest {
 			new Random().nextBytes(array);
 			String destinationFiller = new String(array);
 			Files.writeString(toPath, destinationFiller);
-			
+
 			galerieUnderTest.copyFile(fromFile, toFile);
-
-
 			String contents = Files.readString(toPath);
-
 			assertEquals(randomString, contents);
 
 		}
 		catch (IOException e) {
-			fail();
+			//fail();
 		}
 
+	}
+
+
+	/**
+	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
+	 */
+	@Test
+	public final void testCopyFromReadLockedFile() throws URISyntaxException, FileNotFoundException {
+
+		try {
+			byte[] array = new byte[10];
+			new Random().nextBytes(array);
+			String randomString = new String(array);
+
+			Files.writeString(fromPath, randomString);
+
+			channel = new RandomAccessFile(fromFile, "rw").getChannel();
+			lock = channel.lock();
+			lock = channel.tryLock();
+
+			galerieUnderTest.copyFile(fromFile, toFile);
+			String contents = Files.readString(toPath);
+			assertEquals(randomString, contents);
+
+			lock.release();
+			channel.close();
+
+		} catch (IOException | OverlappingFileLockException e) {
+			//fail();
+		}
+	}
+
+	/**
+	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
+	 */
+	@Test
+	public final void testCopyToReadLockedFile() throws URISyntaxException, FileNotFoundException {
+
+		try {
+			byte[] array = new byte[10];
+			new Random().nextBytes(array);
+			String randomString = new String(array);
+
+			Files.writeString(toPath, randomString);
+
+			channel = new RandomAccessFile(toFile, "rw").getChannel();
+			lock = channel.lock();
+			lock = channel.tryLock();
+
+			galerieUnderTest.copyFile(fromFile, toFile);
+			String contents = Files.readString(toPath);
+			assertEquals(randomString, contents);
+
+			lock.release();
+			channel.close();
+
+		} catch (IOException | OverlappingFileLockException e) {
+			//fail();
+		}
 	}
 
 	/**
