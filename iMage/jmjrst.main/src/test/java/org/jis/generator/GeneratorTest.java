@@ -8,6 +8,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +36,9 @@ public class GeneratorTest {
 
   private File input = new File("target/test");
   private File output = new File("target/test");
+
+
+  //private File zipFile = new File("target/test");
 
   /**
    * Input for test cases
@@ -176,7 +180,7 @@ public class GeneratorTest {
 
   @Test
   public void testRotateImage_RotateM90() {
-    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Math.toRadians(-90));
+    this.rotatedImageTestResult = this.generator.rotateImage(this.testImage, Generator.ROTATE_M90);
 
     assertEquals(this.testImage.getHeight(), this.rotatedImageTestResult.getWidth());
     assertEquals(this.testImage.getWidth(), this.rotatedImageTestResult.getHeight());
@@ -199,6 +203,53 @@ public class GeneratorTest {
       for (int j = 0; j < this.imageWidth; j++) {
         assertEquals(this.testImage.getRGB(j, i), this.rotatedImageTestResult.getRGB(this.imageHeight - 1 - i, j));
       }
+    }
+  }
+
+  @Ignore
+  public void testCreateZIP() {
+    File zipFile = new File("target/test");
+    File imageFile = new File("target/test");
+    try {
+      Vector<File> fileVector = new Vector<>();
+      ImageIO.write(testImage, "jpg", imageFile);
+      fileVector.add(imageFile);
+      this.generator.createZip(zipFile, fileVector);
+      assertEquals(zipFile.getAbsolutePath().substring(zipFile.getAbsolutePath().length() - 4), "zip");
+    } catch (IOException e) {
+      imageFile.delete();
+      zipFile.delete();
+      fail();
+    }
+  }
+
+  @Test
+  public void testGenerateTrue() {
+    this.generator.generate(true);
+    assertTrue(TEST_DIR.isDirectory());
+  }
+
+  @Test
+  public void testGenerateFalse() {
+    this.generator.generate(false);
+    assertTrue(TEST_DIR.isDirectory());
+  }
+
+  @Ignore
+  public void testRotate() {
+    this.generator.rotate(input);
+    assertTrue(input.isDirectory());
+  }
+
+  @Ignore
+  public void testGenerateSingle() {
+    File imageFile = new File("target/test");
+    try {
+      ImageIO.write(testImage, "jpg", imageFile);
+      this.generator.generateSingle(imageFile, testImage);
+    } catch (IOException e) {
+      imageFile.delete();
+      fail();
     }
   }
 
@@ -234,5 +285,4 @@ public class GeneratorTest {
 
     return true;
   }
-
 }
