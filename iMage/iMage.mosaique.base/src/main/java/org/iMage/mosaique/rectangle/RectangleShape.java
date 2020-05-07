@@ -42,7 +42,7 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
   public int getAverageColor() {
     int sum = 0;
     for (int i = 0; i < image.getHeight(); i++) {
-      for (int j = 0; j < image.getWidth(); j ++) {
+      for (int j = 0; j < image.getWidth(); j++) {
         sum += image.getRGB(i, j);
       }
     }
@@ -52,7 +52,7 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
   @Override
   public BufferedImage getThumbnail() {
     return (BufferedImage) this.bufferedImage.getScaledInstance(this.bufferedImage.getWidth() / 4,
-            this.bufferedImage.getHeight() / 4,4);
+            this.bufferedImage.getHeight() / 4, 4);
   }
 
   /**
@@ -61,8 +61,8 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
    */
   @Override
   public void drawMe(BufferedArtImage targetRect) {
-    for (int i = 0; i < image.getHeight(); i ++) {
-      for (int j = 0; j < image.getWidth(); j ++) {
+    for (int i = 0; i < image.getHeight(); i++) {
+      for (int j = 0; j < image.getWidth(); j++) {
         if (i < targetRect.getHeight() && j < targetRect.getWidth()) {
           targetRect.setRGB(i, j, image.getRGB(i, j));
         }
