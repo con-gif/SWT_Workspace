@@ -93,7 +93,7 @@ Plattform: PC mit Windows 7 oder Nachfolger-Betriebssystem.
 \item[NF10] Die Suche soll für eine Anzahl von fünfhundert (500) Bildern maximal zehn (10)Minuten benötigen und selbstständig nach einer Suchdauer von einer Stunde abbrechen.
 \item[NF20] Maximal sollen 50  Bilder  gleichzeitig  angezeigt  werden.
 \item[NF30] Der Zugriff auf den Zentralserver soll von mindestens einhundert (100) Nutzern gleich-zeitig erfolgen können.
-\item[NF40] Die Dauer des Hochladens der Bilder maximal linear mit der Anzahl der Bilder wachsen.
+\item[NF40] Die Dauer des Hochladens der Bilder darf maximal linear mit der Anzahl der Bilder wachsen.
 \item[NF50] Der maximale Grad an \gls{Komprimierung} soll dabei abhängig von der Bildgröße so berechnet werden, dass die Motive in 90\% der Bilder erkennbar bleiben.
 \end{itemize}
 
@@ -154,7 +154,7 @@ Ereignisfluss:
 \begin{itemize}[nosep]
 \item Der Benutzer wählt die Speichernoption der Benutzeroberfläche des Systems. iMage öffnet ein Auswahlfenster mit zwei Speicheroptionen: lokales Speichern oder Speichern auf dem Server.
 \item Der Benutzer wählt eine Option aus und muss beim lokalen Speichern einen gültigen Verzeichnichpfad angeben. Beim Speichern auf dem Server übernimmt iMage das Verzeichnismanagement. iMage speichert das/die Bilder.
-\item Im Fall eines Speichern auf dem Server sendet iMage den Server eine Speichernanforderung mit den Benutzerdaten des Benutzers. Der Server bestätigt das Konto des Benutzers und iMage sendet das/die Bild/er fürs Speichern. Der Server durchführt das Speichern und informiert iMage über der Abschließung der Prozedur.
+\item Im Fall eines Speichern auf dem Server sendet iMage den Server eine Speichernanforderung mit den Kontodaten des Benutzers. Der Server bestätigt das Konto des Benutzers und iMage sendet das/die Bild/er fürs Speichern. Der Server durchführt das Speichern und informiert iMage über der Abschließung der Prozedur.
 \item Der Benutzer bekommt eine Bestätigung vom System fürs erfolgreiche Speichern.
 \end{itemize}
 
@@ -168,7 +168,7 @@ Ereignisfluss:
 
 \begin{itemize}[nosep]
 \item Nachdem der Benutzer eine Suche mit Komprimierung oder Speichern auf dem Server getätigt hat nimmt iMage eine Komprimierung vor.
-\item Die Komprimierung wird von iMage intern durchgeführt und das System läuft automatisch nach dem nächsten Zustand.
+\item Die Komprimierung wird von iMage intern durchgeführt und das System läuft automatisch nach dem nächsten Zustand. Die komprimierte Bilderdateien ersetzen die Originaldateien.
 \end{itemize}
 
 %
