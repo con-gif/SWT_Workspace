@@ -1,6 +1,7 @@
 package org.iMage.mosaique.rectangle;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import org.iMage.mosaique.base.IMosaiqueArtist;
  */
 public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
 
+  private Collection<BufferedArtImage> images;
+
   /**
    * Create an artist who works with {@link RectangleShape RectangleShapes}
    *
@@ -28,7 +31,13 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
    *           iff tileWidth or tileHeight &lt;= 0, or images is empty.
    */
   public RectangleArtist(Collection<BufferedArtImage> images, int tileWidth, int tileHeight) {
-    throw new RuntimeException("not implemented");
+    this.images = new ArrayList<>();
+    BufferedImage bufferedImage;
+    for (BufferedArtImage image : images) {
+      bufferedImage = image.toBufferedImage();
+      this.images.add(new BufferedArtImage((BufferedImage) bufferedImage
+              .getScaledInstance(tileWidth, tileHeight, 4)));
+    }
   }
 
   @Override
