@@ -16,7 +16,7 @@ import org.iMage.mosaique.base.IMosaiqueArtist;
  */
 public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
 
-  private Collection<BufferedArtImage> images;
+  private Collection<BufferedArtImage> tiles;
 
   /**
    * Create an artist who works with {@link RectangleShape RectangleShapes}
@@ -31,11 +31,11 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
    *           iff tileWidth or tileHeight &lt;= 0, or images is empty.
    */
   public RectangleArtist(Collection<BufferedArtImage> images, int tileWidth, int tileHeight) {
-    this.images = new ArrayList<>();
+    this.tiles = new ArrayList<>();
     BufferedImage bufferedImage;
     for (BufferedArtImage image : images) {
       bufferedImage = image.toBufferedImage();
-      this.images.add(new BufferedArtImage((BufferedImage) bufferedImage
+      this.tiles.add(new BufferedArtImage((BufferedImage) bufferedImage
               .getScaledInstance(tileWidth, tileHeight, 4)));
     }
   }
@@ -45,9 +45,28 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
     throw new RuntimeException("not implemented");
   }
 
+  /**
+   * Finds and returns the tile with the closest average color to a given image.
+   * @param region image to compare colors against.
+   * @return image with the closest average color.
+   */
   @Override
   public BufferedArtImage getTileForRegion(BufferedArtImage region) {
-    throw new RuntimeException("not implemented");
+    RectangleShape regionShape = new RectangleShape(region, region.getWidth(), region.getHeight());
+    int regionAverageColor = regionShape.getAverageColor();
+
+    RectangleShape currentTileRect;
+    BufferedArtImage targetTile = region;
+    RectangleShape targetShape = regionShape;
+    for (BufferedArtImage tile : tiles) {
+      currentTileRect = new RectangleShape(tile, tile.getWidth(), tile.getHeight());
+      if (regionAverageColor - currentTileRect.getAverageColor() < regionAverageColor - targetShape.getAverageColor()
+              || regionAverageColor - targetShape.getAverageColor() == 0) {
+        targetTile = tile;
+        targetShape = currentTileRect;
+      }
+    }
+    return targetTile;
   }
 
   @Override
