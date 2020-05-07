@@ -14,6 +14,8 @@ import org.iMage.mosaique.base.ImageUtils;
  */
 public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
 
+  private BufferedArtImage image;
+
   /**
    * Create a new {@link IMosaiqueShape}.
    *
@@ -25,15 +27,25 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
    *          the height
    */
   public RectangleShape(BufferedArtImage image, int w, int h) {
-    BufferedImage im = image.toBufferedImage();
-    ImageUtils.scaleWidth(im, w);
-    ImageUtils.scaleHeight(im, h);
-    image = new BufferedArtImage(im);
+    BufferedImage bufferedImage = image.toBufferedImage();
+    ImageUtils.scaleWidth(bufferedImage, w);
+    ImageUtils.scaleHeight(bufferedImage, h);
+    this.image = new BufferedArtImage(bufferedImage);
   }
 
+  /**
+   * Computes the average color TYPE_INT_ARGB value over all pixels of the image.
+   * @return TYPE_INT_ARGB average color.
+   */
   @Override
   public int getAverageColor() {
-    throw new RuntimeException("not implemented");
+    int sum = 0;
+    for (int i = 0; i < image.getHeight(); i++) {
+      for (int j = 0; j < image.getWidth(); j ++) {
+        sum += image.getRGB(i, j);
+      }
+    }
+    return sum / image.getHeight() * image.getWidth();
   }
 
   @Override
