@@ -15,6 +15,7 @@ import org.iMage.mosaique.base.ImageUtils;
 public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
 
   private BufferedArtImage image;
+  private BufferedImage bufferedImage;
 
   /**
    * Create a new {@link IMosaiqueShape}.
@@ -27,7 +28,7 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
    *          the height
    */
   public RectangleShape(BufferedArtImage image, int w, int h) {
-    BufferedImage bufferedImage = image.toBufferedImage();
+    this.bufferedImage = image.toBufferedImage();
     ImageUtils.scaleWidth(bufferedImage, w);
     ImageUtils.scaleHeight(bufferedImage, h);
     this.image = new BufferedArtImage(bufferedImage);
@@ -50,12 +51,23 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
 
   @Override
   public BufferedImage getThumbnail() {
-    throw new RuntimeException("not implemented");
+    return (BufferedImage) this.bufferedImage.getScaledInstance(this.bufferedImage.getWidth() / 4,
+            this.bufferedImage.getHeight() / 4,4);
   }
 
+  /**
+   * Copies the contents of the current instance onto the method parameter.
+   * @param targetRect BufferedArtImage to copy onto.
+   */
   @Override
   public void drawMe(BufferedArtImage targetRect) {
-    throw new RuntimeException("not implemented");
+    for (int i = 0; i < image.getHeight(); i ++) {
+      for (int j = 0; j < image.getWidth(); j ++) {
+        if (i < targetRect.getHeight() && j < targetRect.getWidth()) {
+          targetRect.setRGB(i, j, image.getRGB(i, j));
+        }
+      }
+    }
   }
 
   @Override
