@@ -70,13 +70,21 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
     }
   }
 
+  /**
+   * Getter.
+   * @return the height of the current instance in pixels.
+   */
   @Override
   public int getHeight() {
-    throw new RuntimeException("not implemented");
+    return this.bufferedImage.getHeight();
   }
 
+  /**
+   * Getter.
+   * @return the width of the current instance in pixels.
+   */
   @Override
   public int getWidth() {
-    throw new RuntimeException("not implemented");
+    return this.bufferedImage.getWidth();
   }
 }
