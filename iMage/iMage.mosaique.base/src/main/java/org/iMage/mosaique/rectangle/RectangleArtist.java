@@ -3,6 +3,7 @@ package org.iMage.mosaique.rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.iMage.mosaique.base.BufferedArtImage;
@@ -17,6 +18,8 @@ import org.iMage.mosaique.base.IMosaiqueArtist;
 public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
 
   private Collection<BufferedArtImage> tiles;
+  private int tileWidth;
+  private int tileHeight;
 
   /**
    * Create an artist who works with {@link RectangleShape RectangleShapes}
@@ -38,11 +41,21 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
       this.tiles.add(new BufferedArtImage((BufferedImage) bufferedImage
               .getScaledInstance(tileWidth, tileHeight, 4)));
     }
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
   }
 
+  /**
+   * Getter.
+   * @return a List of all tiles cast to BufferedImage.
+   */
   @Override
   public List<BufferedImage> getThumbnails() {
-    throw new RuntimeException("not implemented");
+    List<BufferedImage> thumbnails = new ArrayList<>();
+    for (BufferedArtImage tile : tiles) {
+      thumbnails.add(tile.toBufferedImage());
+    }
+    return thumbnails;
   }
 
   /**
@@ -69,13 +82,21 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
     return targetTile;
   }
 
+  /**
+   * Getter.
+   * @return tile width preference of the current instance.
+   */
   @Override
   public int getTileWidth() {
-    throw new RuntimeException("not implemented");
+    return this.tileWidth;
   }
 
+  /**
+   * Getter.
+   * @return tile height preference of the current instance.
+   */
   @Override
   public int getTileHeight() {
-    throw new RuntimeException("not implemented");
+    return this.tileHeight;
   }
 }
