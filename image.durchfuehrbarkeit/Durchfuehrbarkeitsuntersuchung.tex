@@ -1,0 +1,56 @@
+\documentclass[parskip=full]{scrartcl}
+\usepackage[utf8]{inputenc} % use utf8 file encoding for TeX sources
+\usepackage[T1]{fontenc}    % avoid garbled Unicode text in pdf
+\usepackage[german]{babel}  % german hyphenation, quotes, etc
+\usepackage{hyperref}       % detailed hyperlink/pdf configuration
+\hypersetup{                % ‘texdoc hyperref‘ for options
+pdftitle={Aufgabe_2},%
+bookmarks=true,%
+}
+\usepackage{graphicx}       % provides commands for including figures
+\usepackage{csquotes}       % provides \enquote{} macro for "quotes"
+\usepackage[nonumberlist]{glossaries}     % provides glossary commands
+\usepackage{enumitem}
+
+\title{iMage: Durchführbarkeitsuntersuchung}
+\author{Kaloyan Draganov, 2313306}
+
+\begin{document}
+\maketitle
+
+\section{Fachliche Durchführbarkeit}
+
+Die vorgeschlagenen Funktionen erfordern den Aufbau eines zentralen Servers und die Integration einer Web-Crawler-Anwendung. Beide Aktivitäten haben unsere Ingenieure bereits für andere Projekte des Unternehmens ausgeführt.
+
+\section{Alternative Lösungsvorschläge}
+
+Eine Alternative zur Eigenentwicklung der neuen Funktionen wäre die Auslagerung des Projekts an ein anderes Softwareunternehmen, was uns mit ziemlicher Sicherheit mehr Geld kosten würde. Hierdurch würden wir auch Inkompatibilitäten mit den aktuellen Funktionen des Systems riskieren, die uns wieder in unseren Entwicklungsplan zurückversetzen könnten.
+
+Eine andere Möglichkeit betrifft nur die Konfiguration des Servers. Anstatt von einer Installation von unserer Seite, können wir einen On-Demand-Cloud-Serverdienst verwenden, der unsere Kosten senkt, aber auch die persönlichen Daten des Endbenutzers gefährdet.
+
+\section{Personelle Durchführbarkeit}
+
+Für die Realisierung des Projekts wird eine Erweiterung der Funktionalität von iMage notwendig sein. Dies führt zu einem weiteren Engagement des Softwareteams, das das System entwickelt hat. Vorausgesetzt, die aktuellen Funktionen sind bereits getestet, kann das Team die Last bewältigen, ohne dass weitere Einstellungen erforderlich sind.
+
+\section{Risiken}
+
+Die folgenden Punkte müssen im Entwicklungsprozess berücksichtigt werden:
+
+\begin{itemize}
+  \item Das Entwicklungsteam muss bei der Integration der neuen Funktionen in die alten vorsichtig sein. Die Erweiterung muss abwärtskompatibel sein.
+  \item Die Verlängerung darf das Budget nicht überschreiten.
+ \item Alle rechtlichen Bedenken müssen für jeden Markt berücksichtigt werden, in dem die neuen Funktionen eingeführt werden.
+\end{itemize}
+
+\section{Ökonomische Durchführbarkeit}
+
+Das Projektteam muss für die Entwicklung der vorgeschlagenen Funktionen für einen weiteren Monat bezahlt werden. Außerdem muss die Serverinfrastruktur in der Unternehmenszentrale des Kunden konfiguriert und untergebracht werden.
+
+\section{Rechtliche Gesichtspunkte}
+
+Wir müssen garantieren können, dass der Endbenutzer mit unserer Software keine urheberrechtlich geschützten Materialien aus dem Internet herunterladen kann. Andernfalls könnten wir in einigen unserer Märkte mit strengerem Urheberrecht strafrechtlich verfolgt werden.
+
+\section{Konklusion}
+
+Nachdem die Kosten und Risiken dargelegt wurden, die sich aus der möglichen Umsetzung der vorgeschlagenen Projektausweitungen ergeben, kann man mit Sicherheit sagen, dass das Unternehmen machbar ist und einen Gewinn für unsere Firma generieren würde.
+\end{document}
