@@ -1,6 +1,5 @@
 package org.jis.generator;
 
-import com.sun.source.tree.AssertTree;
 import org.junit.*;
 
 import javax.imageio.*;
@@ -37,8 +36,6 @@ public class GeneratorTest {
   private File input = new File("target/test");
   private File output = new File("target/test");
 
-
-  //private File zipFile = new File("target/test");
 
   /**
    * Input for test cases

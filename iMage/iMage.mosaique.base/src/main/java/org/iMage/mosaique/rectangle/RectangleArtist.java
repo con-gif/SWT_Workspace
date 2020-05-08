@@ -1,5 +1,6 @@
 package org.iMage.mosaique.rectangle;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,11 +39,24 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
     BufferedImage bufferedImage;
     for (BufferedArtImage image : images) {
       bufferedImage = image.toBufferedImage();
-      this.tiles.add(new BufferedArtImage((BufferedImage) bufferedImage
-              .getScaledInstance(tileWidth, tileHeight, 4)));
+      this.tiles.add(new BufferedArtImage(imageToBufferedImage(bufferedImage.getScaledInstance(tileWidth, tileHeight, 4))));
     }
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
+  }
+
+  /**
+   * Artificial cast from class Image to BufferedImage
+   * @param image file to convert.
+   * @return converted image.
+   */
+  private static BufferedImage imageToBufferedImage(Image image) {
+    BufferedImage bufferedImage = new BufferedImage
+            (image.getWidth(null),image.getHeight(null),BufferedImage.TYPE_INT_RGB);
+    Graphics bg = bufferedImage.getGraphics();
+    bg.drawImage(image, 0, 0, null);
+    bg.dispose();
+    return bufferedImage;
   }
 
   /**
