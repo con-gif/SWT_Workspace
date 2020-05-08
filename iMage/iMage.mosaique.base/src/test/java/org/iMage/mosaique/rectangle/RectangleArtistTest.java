@@ -7,8 +7,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ public class RectangleArtistTest {
     private Collection<BufferedArtImage> images;
     private Collection<BufferedArtImage> imagesBig;
 
-    private BufferedImage bufferedImage;
     private BufferedArtImage image;
 
     @Before
@@ -60,7 +57,7 @@ public class RectangleArtistTest {
         }
         rectangleArtist = new RectangleArtist(images, image.getWidth() / 4, image.getHeight() / 4);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             imagesBig.addAll(images);
         }
         Collections.shuffle((List<?>) imagesBig);
@@ -73,7 +70,7 @@ public class RectangleArtistTest {
         assertTrue(tile.getHeight() > 0);
     }
 
-    @Ignore //(timeout = 100)
+    @Test(timeout = 1000)
     public void testGetTileForRegionTimed() {
         BufferedArtImage tile = rectangleArtistBig.getTileForRegion(image);
         assertTrue(tile.getHeight() > 0);
@@ -81,7 +78,11 @@ public class RectangleArtistTest {
 
     @After
     public void destroy() {
-        bufferedImage = null;
         image = null;
+        images = null;
+        imagesBig = null;
+
+        rectangleArtist = null;
+        rectangleArtistBig = null;
     }
 }
