@@ -15,7 +15,7 @@ import org.iMage.mosaique.base.IMosaiqueEasel;
  */
 public class MosaiqueEasel implements IMosaiqueEasel<BufferedArtImage> {
 
-  private static final int INCREMENT_RATIO = 4;
+  public static final int INCREMENT_RATIO = 20;
 
   /**
    * Creates a mosaique image for a given sample.
@@ -42,7 +42,7 @@ public class MosaiqueEasel implements IMosaiqueEasel<BufferedArtImage> {
         writeTile(output, tile, i, j);
       }
     }
-    return input;
+    return output;
   }
 
   /**

@@ -58,8 +58,9 @@ public class MosaiqueEaselTest {
             fail(e.getMessage());
         }
 
-        artist = new RectangleArtist(images, image.getWidth() / 4, image.getHeight() / 4);
-        targetFile = new File("target/test-classes/result.jpg");
+        artist = new RectangleArtist(images, image.getWidth() / MosaiqueEasel.INCREMENT_RATIO,
+                image.getHeight() / MosaiqueEasel.INCREMENT_RATIO);
+        targetFile = new File("target/test-classes/result.png");
         try {
             targetFile.createNewFile();
         } catch (IOException e) {
@@ -71,7 +72,7 @@ public class MosaiqueEaselTest {
     public void createMosaiqueTest() {
         try {
             target = easel.createMosaique(image.toBufferedImage(), artist);
-            ImageIO.write(target, "jpg", targetFile);
+            ImageIO.write(target, "png", targetFile);
             assertTrue(targetFile.exists());
         } catch (IOException e) {
             e.printStackTrace();
