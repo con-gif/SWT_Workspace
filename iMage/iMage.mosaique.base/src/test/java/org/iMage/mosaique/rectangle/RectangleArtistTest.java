@@ -17,6 +17,12 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+/**
+ * A class to define tests for the functionality of RectangleArtist
+ *
+ * @author Kaloyan Draganov
+ * @version 0.0.1
+ */
 public class RectangleArtistTest {
 
     private RectangleArtist rectangleArtist;
@@ -28,6 +34,9 @@ public class RectangleArtistTest {
 
     private BufferedArtImage image;
 
+    /**
+     * Initializes objects for the tests.
+     */
     @Before
     public void prepare() {
         images = new ArrayList<>();
@@ -64,18 +73,29 @@ public class RectangleArtistTest {
         rectangleArtistBig = new RectangleArtist(imagesBig, image.getWidth() / 4, image.getHeight() / 4);
     }
 
+    /**
+     * Tests method getTilesForRegion() of class RectangleArtist.
+     */
     @Test
     public void testGetTileForRegion() {
         BufferedArtImage tile = rectangleArtist.getTileForRegion(image);
         assertTrue(tile.getHeight() > 0);
     }
 
+    /**
+     * Tests method getTilesForRegion() of class RectangleArtist
+     * for a particularly large amount of images to search
+     * through.
+     */
     @Test(timeout = 1000)
     public void testGetTileForRegionTimed() {
         BufferedArtImage tile = rectangleArtistBig.getTileForRegion(image);
         assertTrue(tile.getHeight() > 0);
     }
 
+    /**
+     * Destroys test resources.
+     */
     @After
     public void destroy() {
         image = null;

@@ -18,6 +18,12 @@ import java.util.Collection;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+/**
+ * A class to define tests for the functionality of MosaiqueEasel
+ *
+ * @author Kaloyan Draganov
+ * @version 0.0.1
+ */
 public class MosaiqueEaselTest {
 
     private  MosaiqueEasel easel;
@@ -30,6 +36,9 @@ public class MosaiqueEaselTest {
     private File targetFile;
 
 
+    /**
+     * Initializes objects for the tests.
+     */
     @Before
     public void prepare() {
         easel = new MosaiqueEasel();
@@ -58,8 +67,8 @@ public class MosaiqueEaselTest {
             fail(e.getMessage());
         }
 
-        artist = new RectangleArtist(images, image.getWidth() / MosaiqueEasel.INCREMENT_RATIO,
-                image.getHeight() / MosaiqueEasel.INCREMENT_RATIO);
+        artist = new RectangleArtist(images, image.getWidth() / MosaiqueEasel.REDUCTION_RATIO,
+                image.getHeight() / MosaiqueEasel.REDUCTION_RATIO);
         targetFile = new File("target/test-classes/result.png");
         try {
             targetFile.createNewFile();
@@ -68,6 +77,9 @@ public class MosaiqueEaselTest {
         }
     }
 
+    /**
+     * Tests creating a mosaique version of a given image.
+     */
     @Test
     public void createMosaiqueTest() {
         try {
@@ -79,8 +91,14 @@ public class MosaiqueEaselTest {
         }
     }
 
+    /**
+     * Destroys test resources.
+     */
     @After
     public void destroy() {
+        easel = null;
+        artist = null;
+        
         image = null;
         target = null;
         if (targetFile.exists()) {

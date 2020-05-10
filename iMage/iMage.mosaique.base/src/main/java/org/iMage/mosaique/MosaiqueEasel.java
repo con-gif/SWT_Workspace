@@ -15,7 +15,10 @@ import org.iMage.mosaique.base.IMosaiqueEasel;
  */
 public class MosaiqueEasel implements IMosaiqueEasel<BufferedArtImage> {
 
-  public static final int INCREMENT_RATIO = 20;
+  /**
+   * Number of tiles per dimension for the mosaique generation.
+   */
+  public static final int REDUCTION_RATIO = 20;
 
   /**
    * Creates a mosaique image for a given sample.
@@ -34,10 +37,10 @@ public class MosaiqueEasel implements IMosaiqueEasel<BufferedArtImage> {
     BufferedImage region;
     BufferedArtImage tile;
 
-    for (int i = 1; i < width - width / INCREMENT_RATIO; i += width / INCREMENT_RATIO) {
+    for (int i = 1; i < width - width / REDUCTION_RATIO; i += width / REDUCTION_RATIO) {
 
-      for (int j = 1; j < height - height / INCREMENT_RATIO; j += height / INCREMENT_RATIO) {
-        region = input.getSubimage(i, j, width / INCREMENT_RATIO, height / INCREMENT_RATIO);
+      for (int j = 1; j < height - height / REDUCTION_RATIO; j += height / REDUCTION_RATIO) {
+        region = input.getSubimage(i, j, width / REDUCTION_RATIO, height / REDUCTION_RATIO);
         tile = artist.getTileForRegion(new BufferedArtImage(region));
         writeTile(output, tile, i, j);
       }
