@@ -98,7 +98,7 @@ public class MosaiqueEaselTest {
     public void destroy() {
         easel = null;
         artist = null;
-        
+
         image = null;
         target = null;
         if (targetFile.exists()) {

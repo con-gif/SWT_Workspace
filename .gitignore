@@ -49,8 +49,9 @@ __MACOSX/
 # Windows
 Thumbs.db
 
-iMage\jmjrst.main\target
-iMage\target
+iMage/jmjrst.main/target
+iMage/target
+*.uxf
 
 # LaTex
 *.acn
