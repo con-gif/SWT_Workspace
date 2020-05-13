@@ -50,7 +50,7 @@ public final class App {
   private static MosaiqueEasel easel;
 
   public static void main(String[] args) {
-    // Don't touch...
+
     CommandLine cmd = null;
     try {
       cmd = App.doCommandLineParsing(args);
@@ -58,7 +58,6 @@ public final class App {
       System.err.println("Wrong command line arguments given: " + e.getMessage());
       System.exit(1);
     }
-    // ...this!
 
     input = fetchInput(cmd);
     tiles = fetchTiles(cmd);
@@ -132,7 +131,7 @@ public final class App {
       } catch (IOException e) {
         e.printStackTrace();
       }
-    }catch (MalformedURLException e) {
+    } catch (MalformedURLException e) {
       System.err.println("Invalid or missing image origin path passed!");
       System.exit(1);
     }
@@ -142,7 +141,7 @@ public final class App {
   private static Collection<BufferedArtImage> fetchTiles(CommandLine cmd) {
     Collection<BufferedArtImage> tiles = new ArrayList<>();
     try {
-      File tilesDir = new File(cmd.getOptionValue(CMD_OPTION_INPUT_TILES_DIR));
+      File tilesDir = new File(cmd.getOptionValue(CMD_OPTION_INPUT_TILES_DIR, MISSING));
       for (final File fileEntry : tilesDir.listFiles()) {
         if (FilenameUtils.getExtension(fileEntry.getAbsolutePath()).endsWith("jpg")) {
           final URL tileSource = new URL(fileEntry.getAbsolutePath());
@@ -171,7 +170,7 @@ public final class App {
   }
 
   private static File fetchOutputDir(CommandLine cmd) {
-    File outputDir = new File(cmd.getOptionValue(CMD_OPTION_OUTPUT_IMAGE));
+    File outputDir = new File(cmd.getOptionValue(CMD_OPTION_OUTPUT_IMAGE, MISSING));
     if (outputDir.isDirectory() || outputDir.isFile()) {
       return outputDir;
     } else {
@@ -184,7 +183,7 @@ public final class App {
   private static int fetchTilesWidth(CommandLine cmd) {
     int tilesWidth = 0;
     try {
-      tilesWidth = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_W));
+      tilesWidth = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_W, MISSING));
 
     } catch (NumberFormatException e) {
       System.err.println("Illegal number format for tiles width passed!");
@@ -196,7 +195,7 @@ public final class App {
   private static int fetchTilesHeight(CommandLine cmd) {
     int tilesHeight = 0;
     try {
-      tilesHeight = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_H));
+      tilesHeight = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_H, MISSING));
     } catch (NumberFormatException e) {
       System.err.println("Illegal number format for tiles height passed!");
       System.exit(1);
