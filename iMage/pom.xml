@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>jmjrst.main</module>
-        <module>iMage.mosaique.base</module>
+        <module>iMage.mosaique</module>
         <module>iMage.mosaique.cli</module>
     </modules>
 

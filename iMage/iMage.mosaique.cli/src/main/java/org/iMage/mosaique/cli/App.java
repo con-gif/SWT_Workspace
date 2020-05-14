@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * This class parses all command line parameters and creates a mosaique.
@@ -39,6 +40,8 @@ public final class App {
   private static final String CMD_OPTION_TILE_H = "h";
 
   private static final String MISSING = null;
+  private static final int REQUIRED_IMAGE_COUNT = 10;
+  private static final double REQUITED_SIZE_REDUCTION_RATIO = 10.0;
 
   private static BufferedArtImage input;
   private static Collection<BufferedArtImage> tiles;
@@ -69,9 +72,9 @@ public final class App {
     artist = new RectangleArtist(tiles, tilesWidth, tilesHeight);
     easel = new MosaiqueEasel();
     output = easel.createMosaique(input.toBufferedImage(), artist);
+    writeOutput(output, outputDir);
 
   }
-
 
   /**
    * Parse and check command line arguments
@@ -142,7 +145,7 @@ public final class App {
     Collection<BufferedArtImage> tiles = new ArrayList<>();
     try {
       File tilesDir = new File(cmd.getOptionValue(CMD_OPTION_INPUT_TILES_DIR, MISSING));
-      for (final File fileEntry : tilesDir.listFiles()) {
+      for (File fileEntry : Objects.requireNonNull(tilesDir.listFiles())) {
         if (FilenameUtils.getExtension(fileEntry.getAbsolutePath()).endsWith("jpg")) {
           final URL tileSource = new URL(fileEntry.getAbsolutePath());
           try (ImageInputStream iis = ImageIO.createImageInputStream(tileSource.openStream())) {
@@ -156,7 +159,7 @@ public final class App {
           }
         }
       }
-      if (tiles.size() < 10) {
+      if (tiles.size() < REQUIRED_IMAGE_COUNT) {
         throw new IllegalAccessException();
       }
     } catch (MalformedURLException e) {
@@ -205,14 +208,23 @@ public final class App {
 
   private static void verifyDimensions(int tilesWidth, int tilesHeight) {
     try {
-      if (tilesWidth != Math.round(input.getWidth() / 10.0) && tilesWidth != 0) {
+      if (tilesWidth != Math.round(input.getWidth() / REQUITED_SIZE_REDUCTION_RATIO) && tilesWidth != 0) {
         throw new NumberFormatException();
       }
-      if (tilesHeight != Math.round(input.getHeight() / 10.0) && tilesHeight != 0) {
+      if (tilesHeight != Math.round(input.getHeight() / REQUITED_SIZE_REDUCTION_RATIO) && tilesHeight != 0) {
         throw new NumberFormatException();
       }
     } catch (NumberFormatException e) {
       System.err.println("Invalid value for tiles width or/and height passed!");
+      System.exit(1);
+    }
+  }
+
+  private static void writeOutput(BufferedImage output, File outputDir) {
+    try {
+      ImageIO.write(output, "png", outputDir);
+    } catch (IOException e) {
+      System.err.println("Cannot write mosaique to file!");
       System.exit(1);
     }
   }

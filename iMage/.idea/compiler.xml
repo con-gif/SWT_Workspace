@@ -8,7 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="2313306" />
         <module name="jmjrst.main" />
-        <module name="iMage.mosaique.base" />
+        <module name="iMage.mosaique" />
         <module name="iMage.mosaique.cli" />
       </profile>
     </annotationProcessing>
