@@ -8,7 +8,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
-import org.apache.commons.io.FilenameUtils;
 import org.iMage.mosaique.rectangle.RectangleArtist;
 
 import javax.imageio.ImageIO;
@@ -125,17 +124,33 @@ public final class App {
     BufferedArtImage input = null;
     try {
       final URL imageResource = new URL(cmd.getOptionValue(CMD_OPTION_INPUT_IMAGE, MISSING));
-      try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
-        ImageReader reader = ImageIO.getImageReadersByFormatName("jpg").next();
-        reader.setInput(iis, true);
-        ImageReadParam params = reader.getDefaultReadParam();
-        input = new BufferedArtImage(reader.read(0, params));
-        reader.dispose();
-      } catch (IOException e) {
-        e.printStackTrace();
+      if (imageResource.toString().endsWith("jpg")) {
+        try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
+          ImageReader reader = ImageIO.getImageReadersByFormatName("jpg").next();
+          reader.setInput(iis, true);
+          ImageReadParam params = reader.getDefaultReadParam();
+          input = new BufferedArtImage(reader.read(0, params));
+          reader.dispose();
+        } catch (IOException e) {
+          throw new IllegalArgumentException();
+        }
+      } else if (imageResource.toString().endsWith("png")) {
+        try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
+          ImageReader reader = ImageIO.getImageReadersByFormatName("png").next();
+          reader.setInput(iis, true);
+          ImageReadParam params = reader.getDefaultReadParam();
+          input = new BufferedArtImage(reader.read(0, params));
+          reader.dispose();
+        } catch (IOException e) {
+          throw new IllegalArgumentException();
+        }
       }
+
     } catch (MalformedURLException e) {
       System.err.println("Invalid or missing image origin path passed!");
+      System.exit(1);
+    } catch (IllegalArgumentException e) {
+      System.err.println("Unsupported image format specified!");
       System.exit(1);
     }
     return input;
@@ -146,7 +161,7 @@ public final class App {
     try {
       File tilesDir = new File(cmd.getOptionValue(CMD_OPTION_INPUT_TILES_DIR, MISSING));
       for (File fileEntry : Objects.requireNonNull(tilesDir.listFiles())) {
-        if (FilenameUtils.getExtension(fileEntry.getAbsolutePath()).endsWith("jpg")) {
+        if (fileEntry.getAbsolutePath().endsWith("jpg")) {
           final URL tileSource = new URL(fileEntry.getAbsolutePath());
           try (ImageInputStream iis = ImageIO.createImageInputStream(tileSource.openStream())) {
             ImageReader reader = ImageIO.getImageReadersByFormatName("jpg").next();
@@ -155,18 +170,29 @@ public final class App {
             tiles.add(new BufferedArtImage(reader.read(0, params)));
             reader.dispose();
           } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException();
+          }
+        } else if (fileEntry.getAbsolutePath().endsWith("png")) {
+          final URL tileSource = new URL(fileEntry.getAbsolutePath());
+          try (ImageInputStream iis = ImageIO.createImageInputStream(tileSource.openStream())) {
+            ImageReader reader = ImageIO.getImageReadersByFormatName("png").next();
+            reader.setInput(iis, true);
+            ImageReadParam params = reader.getDefaultReadParam();
+            tiles.add(new BufferedArtImage(reader.read(0, params)));
+            reader.dispose();
+          } catch (IOException e) {
+            throw new IllegalArgumentException();
           }
         }
       }
       if (tiles.size() < REQUIRED_IMAGE_COUNT) {
-        throw new IllegalAccessException();
+        throw new IllegalArgumentException();
       }
     } catch (MalformedURLException e) {
       System.err.println("Invalid or missing tiles path passed!");
       System.exit(1);
-    } catch (IllegalAccessException e) {
-      System.err.println("Too few tile images provided!");
+    } catch (IllegalArgumentException e) {
+      System.err.println("Too few tile images provided or unsupported image format specified!");
       System.exit(1);
     }
     return tiles;
