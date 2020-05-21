@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>iMage.JavaCrashCourse-plugin</artifactId>
-    <groupId>swt1</groupId>
+    <artifactId>2313306</artifactId>
+    <groupId>swt1.ub3.a2</groupId>
     <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>

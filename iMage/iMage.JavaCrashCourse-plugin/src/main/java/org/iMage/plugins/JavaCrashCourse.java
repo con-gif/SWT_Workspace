@@ -1,6 +1,5 @@
-package org.jis.plugins;
+package org.iMage.plugins;
 
-import org.iMage.plugins.PluginForJmjrst;
 import org.jis.Main;
 
 import javax.swing.JOptionPane;
@@ -60,7 +59,7 @@ public class JavaCrashCourse extends PluginForJmjrst {
             case JAVA_13:
                 System.out.println(RUNNING_LATE);
             default:
-                System.out.println(String.format("%s%d", NAME, getNumberOfParameters()));
+                System.out.println(String.format("%s(%d)", NAME, getNumberOfParameters()));
         }
     }
 
