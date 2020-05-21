@@ -10,12 +10,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>iMage.JavaCrashCourse-plugin</artifactId>
+    <groupId>swt1</groupId>
+    <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
+
         <dependency>
-            <artifactId>jmjrst.main</artifactId>
             <groupId>swt1</groupId>
+            <artifactId>jmjrst.main</artifactId>
             <version>0.1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
