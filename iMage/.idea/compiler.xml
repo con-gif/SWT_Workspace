@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="jmjrst.main" />
         <module name="iMage.mosaique" />
-        <module name="iMage.JavaCrashCourse-plugin" />
-        <module name="2313306" />
         <module name="iMage.mosaique.cli" />
+        <module name="jmjrst.main" />
+        <module name="2313306" />
+        <module name="iMage.bundle" />
+        <module name="iMage.JavaCrashCourse-plugin" />
       </profile>
     </annotationProcessing>
   </component>
