@@ -47,10 +47,19 @@ public abstract class PluginForJmjrst implements Comparable<PluginForJmjrst> {
    */
   public abstract void configure();
 
+  /**
+   * Compare to implementation. Comparison on two levels: lexicographic by name and by number of parameters.
+   * @param otherPlugin plugin to compare to.
+   * @return an int less than zero if the current instance is lesser than the parameter, zero if both instances are
+   * equal on both parameters and a value greater than zero otherwise.
+   */
   @Override
   public int compareTo(PluginForJmjrst otherPlugin) {
-    //TODO: implement me!
-    return 0;
+    if (this.getName().compareTo(otherPlugin.getName()) == 0) {
+      return Integer.compare(this.getNumberOfParameters(), otherPlugin.getNumberOfParameters());
+    } else {
+      return this.getName().compareTo(otherPlugin.getName());
+    }
   }
 
   @Override
