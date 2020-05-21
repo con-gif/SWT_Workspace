@@ -6,6 +6,7 @@ import org.jis.Main;
  * iMage Application.
  *
  * @author Kaloyan Draganov
+ * @version 1.0
  */
 public class App {
 
