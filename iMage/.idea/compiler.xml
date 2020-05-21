@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="2313306" />
         <module name="jmjrst.main" />
         <module name="iMage.mosaique" />
+        <module name="2313306" />
         <module name="iMage.mosaique.cli" />
       </profile>
     </annotationProcessing>

@@ -59,15 +59,12 @@ import org.jis.view.dialog.OptionsEdit;
  * The Main Class is the Entry Point of the Application and build the GUI
  * </p>
  */
-public final class Main extends JFrame {
+public class Main extends JFrame {
   private static final long serialVersionUID = 5124271743719044219L;
 
   private Options           o;
   private Preview           preview          = null;
   private JScrollPane       jsp              = new JScrollPane();
-  /**
-   * I am a Javadoc comment.
-   */
   public JTextPane          text             = new JTextPane();
   public List               list             = new List(preview);
   public Menu               menu             = null;
@@ -103,7 +100,8 @@ public final class Main extends JFrame {
     GraphicsDevice gd = gs[0];
     GraphicsConfiguration gc = gd.getDefaultConfiguration();
 
-    try {
+    try
+    {
       UIManager.setLookAndFeel(o.getLookAndFeel());
       SwingUtilities.updateComponentTreeUI(this);
     }

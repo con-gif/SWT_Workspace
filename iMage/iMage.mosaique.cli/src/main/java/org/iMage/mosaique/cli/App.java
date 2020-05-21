@@ -156,7 +156,7 @@ public final class App {
   }
 
   private static Collection<BufferedArtImage> fetchTiles(CommandLine cmd) {
-    
+
     Collection<BufferedArtImage> tiles = new ArrayList<>();
     String currentFileType = FILE_TYPE_JPG;
     try {

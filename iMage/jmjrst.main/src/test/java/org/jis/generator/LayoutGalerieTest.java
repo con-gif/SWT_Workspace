@@ -1,233 +1,188 @@
 package org.jis.generator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.URISyntaxException;
-import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.swing.*;
-
 public class LayoutGalerieTest {
-	
-	private LayoutGalerie galerieUnderTest;
-	private File resourceFolder;
-	private File fromFile;
-	private File toFile;
 
-	private Path fromPath;
-	private Path toPath;
+    private LayoutGalerie galerieUnderTest;
 
-	private FileChannel channel;
-	private FileLock lock;
+    private static File resourceFolder;
 
-	/**
-	 * Initializes test object.
-	 * @throws URISyntaxException
-	 */
-	@Before
-	public final void prepareTestResources() throws URISyntaxException {
-		galerieUnderTest = new LayoutGalerie(null, null);
-		resourceFolder = new File(this.getClass().getResource(File.separator).toURI());
-		fromFile = new File(resourceFolder, "from");
-		toFile = new File(resourceFolder, "to");
+    private File fromFile;
+    private File toFile;
 
-		fromPath = FileSystems.getDefault().getPath(fromFile.getPath());
-		toPath = FileSystems.getDefault().getPath(toFile.getPath());
-	}
-		
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyFile() throws URISyntaxException {
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        try {
+            resourceFolder = new File(LayoutGalerieTest.class.getResource(File.separator).toURI());
 
-		try {
-			byte[] array = new byte[10];
-			new Random().nextBytes(array);
-			String randomString = new String(array);
+            System.out.println(resourceFolder.getPath());
 
-			Files.writeString(fromPath, randomString);
-			galerieUnderTest.copyFile(fromFile, toFile);
+            resourceFolder.mkdirs();
 
-			assertTrue(toFile.exists());
+            assertTrue(resourceFolder.exists());
+        } catch (URISyntaxException e) {
+            fail(e.getLocalizedMessage());
+        }
+    }
 
-			String contents = Files.readString(toPath);
-			 		 
-			assertEquals(randomString, contents);
+    @Before
+    public void setUp() {
+        galerieUnderTest = new LayoutGalerie(null, null);
 
-		 }
-		 catch (IOException e) {
-			fail();
-		 }
-		
-	}
+        fromFile = new File(resourceFolder, "from");
+        toFile = new File(resourceFolder, "to");
+    }
 
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyToNonExistentFile() throws URISyntaxException, FileNotFoundException {
+    private static String getRandomString() {
+        byte[] bytes = new byte[10];
+        new Random().nextBytes(bytes);
+        return new String(bytes);
+    }
 
-		try {
+    @Test
+    public final void testCopyFile() {
+        String randomString = getRandomString();
 
-			toFile.delete();
-			galerieUnderTest.copyFile(fromFile, toFile);
+        try {
+            assertTrue(fromFile.createNewFile());
 
+            Files.writeString(fromFile.toPath(), randomString);
 
-		}
-		catch (IOException e) {
-			System.out.println("testCopyToNonExistentFile fails");
-			//throw new FileNotFoundException();
-		}
+            galerieUnderTest.copyFile(fromFile, toFile);
 
-	}
+            assertTrue(toFile.exists());
 
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyFromNonExistentFile() throws URISyntaxException, FileNotFoundException {
+            String contents = Files.readString(toFile.toPath());
 
-		try {
+            assertEquals(randomString, contents);
+        } catch (IOException e) {
+            fail(e.getLocalizedMessage());
+        }
 
-			fromFile.delete();
-			galerieUnderTest.copyFile(fromFile, toFile);
+    }
 
-		}
-		catch (IOException e) {
-			System.out.println("testCopyFromNonExistentFile fails");
-			//throw new FileNotFoundException();
-		}
+    @Test(expected = FileNotFoundException.class)
+    public final void testCopyDirectory() throws IOException {
+        assertTrue(fromFile.mkdir());
 
-	}
+        galerieUnderTest.copyFile(fromFile, toFile);
+    }
 
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyFileDestinationExisting() throws URISyntaxException {
+    @Test(expected = FileNotFoundException.class)
+    public final void testCopyNonexistingSourceFile() throws IOException {
+        fromFile.delete();
 
-		try {
-			byte[] array = new byte[10];
-			new Random().nextBytes(array);
-			String randomString = new String(array);
+        assertFalse(fromFile.exists());
 
-			Files.writeString(fromPath, randomString);
+        galerieUnderTest.copyFile(fromFile, toFile);
+    }
 
-			new Random().nextBytes(array);
-			String destinationFiller = new String(array);
-			Files.writeString(toPath, destinationFiller);
+    @Test
+    public final void testCopyPreexistingTargetFile() {
+        String randomSourceString = getRandomString();
+        String randomTargetString = getRandomString();
 
-			galerieUnderTest.copyFile(fromFile, toFile);
-			String contents = Files.readString(toPath);
-			assertEquals(randomString, contents);
+        try {
+            assertTrue(fromFile.createNewFile());
+            assertTrue(toFile.createNewFile());
 
-		}
-		catch (IOException e) {
-			fail();
-		}
+            Files.writeString(fromFile.toPath(), randomSourceString);
+            Files.writeString(toFile.toPath(), randomTargetString);
 
-	}
+            galerieUnderTest.copyFile(fromFile, toFile);
 
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyFromReadLockedFile() throws URISyntaxException, FileNotFoundException {
+            assertTrue(toFile.exists());
 
-		try {
-			byte[] array = new byte[10];
-			new Random().nextBytes(array);
-			String randomString = new String(array);
+            String contents = Files.readString(toFile.toPath());
 
-			Files.writeString(fromPath, randomString);
+            assertEquals(randomSourceString, contents);
+        } catch (IOException e) {
+            fail(e.getLocalizedMessage());
+        }
+    }
 
-			try {
-				channel = new RandomAccessFile(fromFile, "rw").getChannel();
-				lock = channel.lock();
-				lock = channel.tryLock();
+    @Test
+    public final void testCopyNonreadableSourceFile() throws IOException {
 
-				galerieUnderTest.copyFile(fromFile, toFile);
+        assumeFalse(System.getProperty("os.name").startsWith("Windows"));
 
-			} catch (IOException | OverlappingFileLockException e) {
-				lock.release();
-				channel.close();
-				throw new IOException();
-			}
-			String contents = Files.readString(toPath);
-			assertEquals(randomString, contents);
+        assertTrue(fromFile.createNewFile());
 
-		} catch (IOException e) {
-			System.out.println("testCopyFromReadLockedFile fails");
-			//fail();
-		}
-	}
+        assertTrue(fromFile.setReadable(false));
 
-	/**
-	 * Test method for {@link org.jis.generator.LayoutGalerie#copyFile(File, File)}.
-	 */
-	@Test
-	public final void testCopyToReadLockedFile() throws URISyntaxException, FileNotFoundException {
+        assertThrows(IOException.class, () -> galerieUnderTest.copyFile(fromFile, toFile));
+    }
 
-		try {
-			byte[] array = new byte[10];
-			new Random().nextBytes(array);
-			String randomString = new String(array);
+    @Test
+    public final void testCopyNonreadableSourceFileWin() throws IOException {
 
-			Files.writeString(toPath, randomString);
+        assumeTrue(System.getProperty("os.name").startsWith("Windows"));
 
-			try {
-				channel = new RandomAccessFile(toFile, "rw").getChannel();
-				lock = channel.lock();
-				lock = channel.tryLock();
+        FileOutputStream out = null;
+        FileLock lock = null;
 
-				galerieUnderTest.copyFile(fromFile, toFile);
+        try {
+            assertTrue(fromFile.createNewFile());
 
-			} catch (IOException | OverlappingFileLockException e) {
-				lock.release();
-				channel.close();
-				throw new IOException();
-			}
-			String contents = Files.readString(toPath);
-			assertEquals(randomString, contents);
+            out = new FileOutputStream(fromFile);
+            lock = out.getChannel().tryLock();
 
-		} catch (IOException e) {
-			System.out.println("testCopyToReadLockedFile fails");
-			//fail();
-		}
-	}
+            assertNotNull(lock);
 
-	/**
-	 * Frees test object reference pointer.
-	 */
-	@After
-	public final void destroyTestResources(){
-		galerieUnderTest = null;
-		resourceFolder = null;
+            assertThrows(IOException.class, () -> galerieUnderTest.copyFile(fromFile, toFile));
+        } finally {
+            if (out != null) {
+                out.close();
+            }
 
-		fromFile.delete();
-		toFile.delete();
-		fromFile = null;
-		toFile = null;
+            if (lock != null) {
+                assertFalse(lock.isValid());
+            }
+        }
+    }
 
-		fromPath = null;
-		toPath = null;
-	}
+    @Test
+    public final void testCopyNonwritableTargetFile() throws IOException {
+        assertTrue(fromFile.createNewFile());
+        assertTrue(toFile.createNewFile());
+
+        Files.writeString(fromFile.toPath(), getRandomString());
+
+        assertTrue(toFile.setWritable(false));
+
+        assertThrows(IOException.class, () -> galerieUnderTest.copyFile(fromFile, toFile));
+    }
+
+    @After
+    public void tearDown() {
+        if (fromFile.exists()) {
+            assertTrue(fromFile.delete());
+        }
+        if (toFile.exists()) {
+            assertTrue(toFile.delete());
+        }
+    }
 
 }
