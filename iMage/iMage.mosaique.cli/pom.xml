@@ -7,8 +7,8 @@
 		<artifactId>iMage</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>swt1</artifactId>
-	<groupId>iMage.mosaique.cli</groupId>
+	<artifactId>iMage.mosaique.cli</artifactId>
+	<groupId>swt1</groupId>
 	<dependencies>
 		<dependency>
 			<groupId>swt1</groupId>

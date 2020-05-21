@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="jmjrst.main" />
         <module name="iMage.mosaique" />
+        <module name="iMage.JavaCrashCourse-plugin" />
         <module name="2313306" />
         <module name="iMage.mosaique.cli" />
       </profile>
