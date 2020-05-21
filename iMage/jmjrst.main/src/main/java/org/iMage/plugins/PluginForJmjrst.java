@@ -62,15 +62,30 @@ public abstract class PluginForJmjrst implements Comparable<PluginForJmjrst> {
     }
   }
 
+  /**
+   * HashCode implementation.
+   * @return Standard hash generated from name and numberOfParameters parameters.
+   */
   @Override
   public int hashCode() {
-    //TODO: implement me!
-    return 0;
+    return String.format("%s%d", this.getName(), this.getNumberOfParameters()).hashCode();
   }
 
+  /**
+   * Equals implementation.
+   * @param obj Object to compare to.
+   * @return true of the current instance and the parameter point to the same object or are equal on all parameters.
+   */
   @Override
   public boolean equals(Object obj) {
-    //TODO: implement me!
-    return true;
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || this.getClass() != obj.getClass()) {
+      return false;
+    }
+    PluginForJmjrst toCompare = (PluginForJmjrst) obj;
+    return (this.getName().equals(toCompare.getName())
+            && this.getNumberOfParameters() == toCompare.getNumberOfParameters());
   }
 }
