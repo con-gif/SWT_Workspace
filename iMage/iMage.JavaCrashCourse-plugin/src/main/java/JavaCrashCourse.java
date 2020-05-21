@@ -1,12 +1,14 @@
 import org.iMage.plugins.PluginForJmjrst;
 import org.jis.Main;
 
+import javax.swing.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JavaCrashCourse extends PluginForJmjrst {
 
     private static final String NAME = "Java Crash Course";
-    private static final int NUMBER_OF_ATTRIBUTES = 1;
+    private static final boolean CONFIGURABLE = true;
 
     /**
      * Source: Oracle Corp.
@@ -28,7 +30,7 @@ public class JavaCrashCourse extends PluginForJmjrst {
 
     @Override
     public int getNumberOfParameters() {
-        return NUMBER_OF_ATTRIBUTES;
+        return javaStableReleases.size();
     }
 
     @Override
@@ -43,11 +45,12 @@ public class JavaCrashCourse extends PluginForJmjrst {
 
     @Override
     public boolean isConfigurable() {
-        return false;
+        return CONFIGURABLE;
     }
 
     @Override
     public void configure() {
-
+        String data = javaStableReleases.stream().collect(Collectors.joining("\n"));
+        JOptionPane.showMessageDialog(null, data);
     }
 }
