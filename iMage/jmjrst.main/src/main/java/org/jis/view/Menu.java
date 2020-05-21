@@ -15,7 +15,11 @@
  */
 package org.jis.view;
 
+import java.awt.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -23,6 +27,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 
+import org.iMage.plugins.PluginForJmjrst;
+import org.iMage.plugins.PluginManagement;
 import org.jis.Main;
 import org.jis.listner.MenuListner;
 
@@ -60,7 +66,9 @@ public class Menu extends JMenuBar {
     JMenu option = new JMenu(m.mes.getString("Menu.1"));
     JMenu optionen_look = new JMenu(m.mes.getString("Menu.2"));
     JMenu about = new JMenu(m.mes.getString("Menu.3"));
-    JMenu plugins = new JMenu(m.mes.getString("Menu.17"));
+    JMenu pluginsMenu = new JMenu(m.mes.getString("Menu.17"));
+
+    addPlugins(m, pluginsMenu);
 
     gener = new JMenuItem(m.mes.getString("Menu.4"));
     URL url = ClassLoader.getSystemResource("icons/media-playback-start.png");
@@ -116,7 +124,7 @@ public class Menu extends JMenuBar {
     about.add(info);
     this.add(datei);
     this.add(option);
-    this.add(plugins);
+    this.add(pluginsMenu);
     this.add(about);
 
     MenuListner al = new MenuListner(m, this);
@@ -149,6 +157,38 @@ public class Menu extends JMenuBar {
       .equalsIgnoreCase("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) optionen_look.add(look_gtk); //$NON-NLS-1$
       if (uii[i].toString().substring(uii[i].toString().lastIndexOf(" ") + 1, uii[i].toString().lastIndexOf("]")) //$NON-NLS-1$ //$NON-NLS-2$
           .equalsIgnoreCase("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")) optionen_look.add(look_nimbus); //$NON-NLS-1$
+    }
+  }
+
+  /**
+   * Dynamically populates submenu for selecting and activating plugins.
+   * @param m a reference to the Main class.
+   * @param pluginsMenu plugins menu.
+   */
+  private void addPlugins(Main m, JMenu pluginsMenu) {
+
+    Iterable<PluginForJmjrst> plugins = PluginManagement.getPlugins();
+    Iterator<PluginForJmjrst> iterator = plugins.iterator();
+
+    if (!iterator.hasNext()) {
+      pluginsMenu.add(new JMenuItem(m.mes.getString("Menu.18")));
+    }
+    while (iterator.hasNext()) {
+
+      PluginForJmjrst plugin = iterator.next();
+      JMenu currentPluginMenu = new JMenu(plugin.getName());
+      JMenuItem start = new JMenuItem(m.mes.getString("Menu.19"));
+      currentPluginMenu.add(start);
+
+      if (plugin.isConfigurable()) {
+        JMenuItem configure = new JMenuItem(m.mes.getString("Menu.20"));
+        currentPluginMenu.add(configure);
+      }
+      pluginsMenu.add(currentPluginMenu);
+
+      if (iterator.hasNext()) {
+        pluginsMenu.addSeparator();
+      }
     }
   }
 
