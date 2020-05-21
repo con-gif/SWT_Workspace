@@ -1,14 +1,20 @@
+package org.jis.plugins;
+
 import org.iMage.plugins.PluginForJmjrst;
 import org.jis.Main;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class JavaCrashCourse extends PluginForJmjrst {
 
     private static final String NAME = "Java Crash Course";
     private static final boolean CONFIGURABLE = true;
+
+    private static final String KEEPING_UPDATED = "Keeping updated";
+    private static final String RUNNING_LATE = "Running late";
 
     /**
      * Source: Oracle Corp.
@@ -40,7 +46,22 @@ public class JavaCrashCourse extends PluginForJmjrst {
 
     @Override
     public void run() {
+        Random random = new Random();
+        String release = javaStableReleases.get(random.nextInt() % getNumberOfParameters());
 
+        switch (release) {
+            case JAVA_14:
+                System.out.println(KEEPING_UPDATED);
+            case JAVA_8_LTS:
+            case JAVA_9:
+            case JAVA_10:
+            case JAVA_11_LTS:
+            case JAVA_12:
+            case JAVA_13:
+                System.out.println(RUNNING_LATE);
+            default:
+                System.out.println(String.format("%s%d", NAME, getNumberOfParameters()));
+        }
     }
 
     @Override
