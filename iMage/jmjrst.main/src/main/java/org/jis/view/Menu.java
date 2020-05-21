@@ -60,6 +60,7 @@ public class Menu extends JMenuBar {
     JMenu option = new JMenu(m.mes.getString("Menu.1"));
     JMenu optionen_look = new JMenu(m.mes.getString("Menu.2"));
     JMenu about = new JMenu(m.mes.getString("Menu.3"));
+    JMenu plugins = new JMenu(m.mes.getString("Menu.17"));
 
     gener = new JMenuItem(m.mes.getString("Menu.4"));
     URL url = ClassLoader.getSystemResource("icons/media-playback-start.png");
@@ -115,6 +116,7 @@ public class Menu extends JMenuBar {
     about.add(info);
     this.add(datei);
     this.add(option);
+    this.add(plugins);
     this.add(about);
 
     MenuListner al = new MenuListner(m, this);
