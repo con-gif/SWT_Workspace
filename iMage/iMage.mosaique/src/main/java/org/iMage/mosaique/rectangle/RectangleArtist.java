@@ -1,24 +1,28 @@
 package org.iMage.mosaique.rectangle;
 
+import org.iMage.mosaique.base.BufferedArtImage;
+import org.iMage.mosaique.base.IMosaiqueArtist;
+import org.iMage.mosaique.base.IMosaiqueShape;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-
-import org.iMage.mosaique.base.BufferedArtImage;
-import org.iMage.mosaique.base.IMosaiqueArtist;
+import java.util.stream.Collectors;
 
 /**
  * This class represents an {@link IMosaiqueArtist} who uses rectangles as tiles.
  *
  * @author Dominik Fuchss
- *
  */
 public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
 
-  private Collection<BufferedArtImage> tiles;
+  private static final double EPS = 1E-8;
+
+  private List<RectangleShape> shapes;
+
   private int tileWidth;
   private int tileHeight;
 
@@ -26,91 +30,111 @@ public class RectangleArtist implements IMosaiqueArtist<BufferedArtImage> {
    * Create an artist who works with {@link RectangleShape RectangleShapes}
    *
    * @param images
-   *          the images for the tiles
+   *     the images for the tiles
    * @param tileWidth
-   *          the desired width of the tiles
+   *     the desired width of the tiles
    * @param tileHeight
-   *          the desired height of the tiles
+   *     the desired height of the tiles
    * @throws IllegalArgumentException
-   *           iff tileWidth or tileHeight &lt;= 0, or images is empty.
+   *     iff tileWidth or tileHeight &lt;= 0, or images is empty.
    */
   public RectangleArtist(Collection<BufferedArtImage> images, int tileWidth, int tileHeight) {
-    this.tiles = new ArrayList<>();
-    BufferedImage bufferedImage;
-    for (BufferedArtImage image : images) {
-      bufferedImage = image.toBufferedImage();
-      this.tiles.add(new BufferedArtImage(imageToBufferedImage(bufferedImage.getScaledInstance(tileWidth, tileHeight, 4))));
+    if (images.isEmpty()) {
+      throw new IllegalArgumentException("no tiles provided");
+    }
+    if (tileWidth <= 0 || tileHeight <= 0) {
+      throw new IllegalArgumentException("tileWidth and tileHeight have to be > 0");
     }
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
+    this.shapes = new ArrayList<>();
+    for (BufferedArtImage image : images) {
+      shapes.add(new RectangleShape(image, tileWidth, tileHeight));
+    }
   }
 
-  /**
-   * Artificial cast from class Image to BufferedImage
-   * @param image file to convert.
-   * @return converted image.
-   */
-  private static BufferedImage imageToBufferedImage(Image image) {
-    BufferedImage bufferedImage = new BufferedImage
-            (image.getWidth(null),image.getHeight(null),BufferedImage.TYPE_INT_RGB);
-    Graphics bg = bufferedImage.getGraphics();
-    bg.drawImage(image, 0, 0, null);
-    bg.dispose();
-    return bufferedImage;
-  }
-
-  /**
-   * Getter.
-   * @return a List of all tiles cast to BufferedImage.
-   */
   @Override
   public List<BufferedImage> getThumbnails() {
-    List<BufferedImage> thumbnails = new ArrayList<>();
-    for (BufferedArtImage tile : tiles) {
-      thumbnails.add(tile.toBufferedImage());
-    }
-    return thumbnails;
+    return shapes.stream().map(RectangleShape::getThumbnail).collect(Collectors.toList());
   }
 
-  /**
-   * Finds and returns the tile with the closest average color to a given image.
-   * @param region image to compare colors against.
-   * @return image with the closest average color.
-   */
   @Override
   public BufferedArtImage getTileForRegion(BufferedArtImage region) {
-    RectangleShape regionShape = new RectangleShape(region, region.getWidth(), region.getHeight());
-    int regionAverageColor = regionShape.getAverageColor();
-
-    RectangleShape currentTileRect;
-    BufferedArtImage targetTile = region;
-    RectangleShape targetShape = regionShape;
-    for (BufferedArtImage tile : tiles) {
-      currentTileRect = new RectangleShape(tile, tile.getWidth(), tile.getHeight());
-      if (regionAverageColor - currentTileRect.getAverageColor() < regionAverageColor - targetShape.getAverageColor()
-              || regionAverageColor - targetShape.getAverageColor() == 0) {
-        targetTile = tile;
-        targetShape = currentTileRect;
-      }
+    if (region.getWidth() > this.tileWidth || region.getHeight() > this.tileHeight) {
+      throw new IllegalArgumentException(
+          "requested tiling is greater than tileWidth or tileHeight");
     }
-    return targetTile;
+
+    int average = RectangleCalculator.averageColor(region.toBufferedImage());
+
+    IMosaiqueShape<BufferedArtImage> tile = findNearest(average);
+    BufferedArtImage result = region.createBlankImage();
+    tile.drawMe(result);
+
+    return result;
   }
 
-  /**
-   * Getter.
-   * @return tile width preference of the current instance.
-   */
   @Override
   public int getTileWidth() {
-    return this.tileWidth;
+    return tileWidth;
+  }
+
+  @Override
+  public int getTileHeight() {
+    return tileHeight;
   }
 
   /**
-   * Getter.
-   * @return tile height preference of the current instance.
+   * Find the shape with the best matching color from the list of shapes.
+   *
+   * @param target
+   *     the target color as ARGB.
+   * @return the best matching shape
    */
-  @Override
-  public int getTileHeight() {
-    return this.tileHeight;
+  protected final IMosaiqueShape<BufferedArtImage> findNearest(int target) {
+    List<RectangleShape> nearest = new ArrayList<>();
+
+    Iterator<RectangleShape> iter = shapes.iterator();
+    RectangleShape shape = iter.next();
+    nearest.add(shape);
+
+    double dist = colorError(target, shape.getAverageColor());
+
+    while (iter.hasNext()) {
+      RectangleShape next = iter.next();
+      double nextDist = colorError(target, next.getAverageColor());
+
+      if (Math.abs(dist - nextDist) < EPS) {
+        // Distances equal
+        nearest.add(next);
+      } else if (nextDist < dist) {
+        // New smallest
+        nearest.clear();
+        nearest.add(next);
+        dist = nextDist;
+      }
+    }
+    return nearest.get((int) (Math.random() * nearest.size()));
   }
+
+  /**
+   * Calculate the difference between two argb colors as euclidean distance.<br> 
+   * Range: [0, sqrt(4 * pow(255, 2))]
+   *
+   * @param colorA
+   *     the first color
+   * @param colorB
+   *     the second color
+   * @return the difference of the colors
+   */
+  private static double colorError(int colorA, int colorB) {
+    Color a = new Color(colorA, true);
+    Color b = new Color(colorB, true);
+    double colorError = Math.pow(a.getRed() - b.getRed(), 2);
+    colorError += Math.pow(a.getGreen() - b.getGreen(), 2);
+    colorError += Math.pow(a.getBlue() - b.getBlue(), 2);
+    colorError += Math.pow(a.getAlpha() - b.getAlpha(), 2);
+    return Math.sqrt(colorError);
+  }
+
 }

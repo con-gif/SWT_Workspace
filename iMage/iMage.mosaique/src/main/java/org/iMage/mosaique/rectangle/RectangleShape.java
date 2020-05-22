@@ -1,6 +1,7 @@
 package org.iMage.mosaique.rectangle;
 
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 import org.iMage.mosaique.base.BufferedArtImage;
 import org.iMage.mosaique.base.IMosaiqueShape;
@@ -14,8 +15,8 @@ import org.iMage.mosaique.base.ImageUtils;
  */
 public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
 
-  private BufferedArtImage image;
-  private BufferedImage bufferedImage;
+  private BufferedImage image;
+  private int average;
 
   /**
    * Create a new {@link IMosaiqueShape}.
@@ -28,63 +29,43 @@ public class RectangleShape implements IMosaiqueShape<BufferedArtImage> {
    *          the height
    */
   public RectangleShape(BufferedArtImage image, int w, int h) {
-    this.bufferedImage = image.toBufferedImage();
-    ImageUtils.scaleWidth(bufferedImage, w);
-    ImageUtils.scaleHeight(bufferedImage, h);
-    this.image = new BufferedArtImage(bufferedImage);
+    this.image = ImageUtils.scaleAndCrop(Objects.requireNonNull(image).toBufferedImage(), w, h);
+    this.average = RectangleCalculator.averageColor(this.image);
   }
 
-  /**
-   * Computes the average color TYPE_INT_ARGB value over all pixels of the image.
-   * @return TYPE_INT_ARGB average color.
-   */
   @Override
   public int getAverageColor() {
-    int sum = 0;
-    for (int i = 1; i < image.getWidth(); i++) {
-      for (int j = 1; j < image.getHeight(); j++) {
-        sum += image.getRGB(i, j);
-      }
-    }
-    return sum / image.getHeight() * image.getWidth();
+    return average;
   }
 
   @Override
   public BufferedImage getThumbnail() {
-    return (BufferedImage) this.bufferedImage.getScaledInstance(this.bufferedImage.getWidth() / 4,
-            this.bufferedImage.getHeight() / 4, 4);
+    return image;
   }
 
-  /**
-   * Copies the contents of the current instance onto the method parameter.
-   * @param targetRect BufferedArtImage to copy onto.
-   */
   @Override
   public void drawMe(BufferedArtImage targetRect) {
-    for (int i = 1; i < image.getWidth(); i++) {
-      for (int j = 1; j < image.getHeight(); j++) {
-        if (i < targetRect.getHeight() && j < targetRect.getWidth()) {
-          targetRect.setRGB(i, j, image.getRGB(i, j));
-        }
+    if (targetRect.getWidth() > this.getWidth() || targetRect.getHeight() > this.getHeight()) {
+      throw new IllegalArgumentException("dimensions of target are too big for this tile");
+    }
+
+    int w = Math.min(this.getWidth(), targetRect.getWidth());
+    int h = Math.min(this.getHeight(), targetRect.getHeight());
+
+    for (int x = 0; x < w; x++) {
+      for (int y = 0; y < h; y++) {
+        targetRect.setRGB(x, y, image.getRGB(x, y));
       }
     }
   }
 
-  /**
-   * Getter.
-   * @return the height of the current instance in pixels.
-   */
   @Override
   public int getHeight() {
-    return this.bufferedImage.getHeight();
+    return image.getHeight();
   }
 
-  /**
-   * Getter.
-   * @return the width of the current instance in pixels.
-   */
   @Override
   public int getWidth() {
-    return this.bufferedImage.getWidth();
+    return image.getWidth();
   }
 }

@@ -1,27 +1,17 @@
 package org.iMage.mosaique.cli;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
 import org.iMage.mosaique.rectangle.RectangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * This class parses all command line parameters and creates a mosaique.
@@ -38,23 +28,7 @@ public final class App {
   private static final String CMD_OPTION_TILE_W = "w";
   private static final String CMD_OPTION_TILE_H = "h";
 
-  private static final String MISSING = null;
-  private static final String FILE_TYPE_JPG = "jpg";
-  private static final String FILE_TYPE_PNG = "png";
-  private static final int REQUIRED_IMAGE_COUNT = 10;
-  private static final double REQUITED_SIZE_REDUCTION_RATIO = 10.0;
-
-  private static BufferedArtImage input;
-  private static Collection<BufferedArtImage> tiles;
-  private static File outputDir;
-  private static BufferedImage output;
-  private static int tilesWidth = 0;
-  private static int tilesHeight = 0;
-  private static RectangleArtist artist;
-  private static MosaiqueEasel easel;
-
   public static void main(String[] args) {
-
     CommandLine cmd = null;
     try {
       cmd = App.doCommandLineParsing(args);
@@ -63,28 +37,122 @@ public final class App {
       System.exit(1);
     }
 
-    input = fetchInput(cmd);
-    tiles = fetchTiles(cmd);
-    outputDir = fetchOutputDir(cmd);
-    tilesWidth += fetchTilesWidth(cmd);
-    tilesHeight += fetchTilesHeight(cmd);
-    verifyDimensions(tilesWidth, tilesHeight);
+    BufferedImage inputImage = loadInput(cmd);
+    List<BufferedArtImage> tiles = loadTiles(cmd);
 
-    artist = new RectangleArtist(tiles, tilesWidth, tilesHeight);
-    easel = new MosaiqueEasel();
-    output = easel.createMosaique(input.toBufferedImage(), artist);
-    writeOutput(output, outputDir);
+    int tileW = cmd.hasOption(App.CMD_OPTION_TILE_W) ?
+        Integer.parseInt(cmd.getOptionValue(App.CMD_OPTION_TILE_W)) :
+        inputImage.getWidth() / 10;
 
+    int tileH = cmd.hasOption(App.CMD_OPTION_TILE_H) ?
+        Integer.parseInt(cmd.getOptionValue(App.CMD_OPTION_TILE_H)) :
+        inputImage.getHeight() / 10;
+
+    if (tileW <= 0 || tileH <= 0 || tileW > inputImage.getWidth() || tileH > inputImage
+        .getHeight()) {
+      System.err.println("tileW/H is invalid: " + tileW + "," + tileH);
+      System.exit(1);
+    }
+
+    MosaiqueEasel me = new MosaiqueEasel();
+    RectangleArtist ra = new RectangleArtist(tiles, tileW, tileH);
+    BufferedImage outputImage = me.createMosaique(inputImage, ra);
+
+    writeOutput(cmd, outputImage);
+
+  }
+
+  private static BufferedImage loadInput(CommandLine cmd) {
+    try {
+      String path = cmd.getOptionValue(App.CMD_OPTION_INPUT_IMAGE);
+      if (!path.toLowerCase().endsWith(".png") && !path.toLowerCase().endsWith(".jpeg") && !path
+          .toLowerCase().endsWith("jpg")) {
+        System.err.println("Input is neither PNG nor JPG");
+        System.exit(1);
+      }
+      return ImageIO.read(App.ensureFile(path, false));
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+      throw new Error("unreachable code");
+    }
+  }
+
+  private static List<BufferedArtImage> loadTiles(CommandLine cmd) {
+    List<BufferedArtImage> tiles = new ArrayList<>();
+    try {
+
+      String tileDir = cmd.getOptionValue(App.CMD_OPTION_INPUT_TILES_DIR);
+
+      File directory = App.ensureFile(tileDir, false);
+      FileFilter isImage = f -> f.getName().toLowerCase().endsWith(".jpeg") || f.getName()
+          .toLowerCase().endsWith(".jpg") || f.getName().toLowerCase().endsWith(".png");
+
+      for (File file : directory.listFiles(isImage)) {
+        BufferedImage bi = ImageIO.read(file);
+        BufferedArtImage bai = new BufferedArtImage(bi);
+        tiles.add(bai);
+      }
+
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+    }
+
+    if (tiles.size() < 10) {
+      System.err.println("Not enough tiles found");
+      System.exit(1);
+    }
+
+    return tiles;
+
+  }
+
+  private static void writeOutput(CommandLine cmd, BufferedImage outputImage) {
+    File output = null;
+    try {
+      output = App.ensureFile(cmd.getOptionValue(App.CMD_OPTION_OUTPUT_IMAGE), true);
+      ImageIO.write(outputImage, "png", output);
+    } catch (IOException e) {
+      System.err.println("Could not save image: " + e.getMessage());
+      System.exit(1);
+    }
+
+  }
+
+  /**
+   * Ensure that a file exists (or create if allowed by parameter).
+   *
+   * @param path
+   *     the path to the file
+   * @param create
+   *     indicates whether creation is allowed
+   * @return the file
+   * @throws IOException
+   *     if something went wrong
+   */
+  private static File ensureFile(String path, boolean create) throws IOException {
+    File file = new File(path);
+    if (file.exists()) {
+      return file;
+    }
+    if (create) {
+      file.createNewFile();
+      return file;
+    }
+
+    // File not available
+    throw new IOException("The specified file does not exist: " + path);
   }
 
   /**
    * Parse and check command line arguments
    *
    * @param args
-   *          command line arguments given by the user
+   *     command line arguments given by the user
    * @return CommandLine object encapsulating all options
    * @throws ParseException
-   *           if wrong command line parameters or arguments are given
+   *     if wrong command line parameters or arguments are given
    */
   private static CommandLine doCommandLineParsing(String[] args) throws ParseException {
     Options options = new Options();
@@ -122,135 +190,4 @@ public final class App {
     return parser.parse(options, args);
   }
 
-  private static BufferedArtImage fetchInput(CommandLine cmd) {
-
-    BufferedArtImage input = null;
-    String selectedFileType = FILE_TYPE_JPG;
-    try {
-      final URL imageResource = new URL(cmd.getOptionValue(CMD_OPTION_INPUT_IMAGE, MISSING));
-      if (imageResource.toString().endsWith(FILE_TYPE_JPG)) {
-        selectedFileType = FILE_TYPE_JPG;
-
-      } else if (imageResource.toString().endsWith(FILE_TYPE_PNG)) {
-        selectedFileType = FILE_TYPE_PNG;
-      } else {
-        throw new IllegalArgumentException();
-      }
-      try (ImageInputStream iis = ImageIO.createImageInputStream(imageResource.openStream())) {
-        ImageReader reader = ImageIO.getImageReadersByFormatName(selectedFileType).next();
-        reader.setInput(iis, true);
-        ImageReadParam params = reader.getDefaultReadParam();
-        input = new BufferedArtImage(reader.read(0, params));
-        reader.dispose();
-      } catch (IOException e) {
-        throw new IllegalArgumentException();
-      }
-    } catch (MalformedURLException e) {
-      System.err.println("Invalid or missing image origin path passed!");
-      System.exit(1);
-    } catch (IllegalArgumentException e) {
-      System.err.println("Unsupported image format specified!");
-      System.exit(1);
-    }
-    return input;
-  }
-
-  private static Collection<BufferedArtImage> fetchTiles(CommandLine cmd) {
-
-    Collection<BufferedArtImage> tiles = new ArrayList<>();
-    String currentFileType = FILE_TYPE_JPG;
-    try {
-
-      File tilesDir = new File(cmd.getOptionValue(CMD_OPTION_INPUT_TILES_DIR, MISSING));
-      for (File fileEntry : Objects.requireNonNull(tilesDir.listFiles())) {
-        if (fileEntry.getAbsolutePath().endsWith(FILE_TYPE_JPG)) {
-          currentFileType = FILE_TYPE_JPG;
-        } else if (fileEntry.getAbsolutePath().endsWith(FILE_TYPE_PNG)) {
-          currentFileType = FILE_TYPE_PNG;
-        }
-        final URL tileSource = new URL(fileEntry.getAbsolutePath());
-        try (ImageInputStream iis = ImageIO.createImageInputStream(tileSource.openStream())) {
-          ImageReader reader = ImageIO.getImageReadersByFormatName(currentFileType).next();
-          reader.setInput(iis, true);
-          ImageReadParam params = reader.getDefaultReadParam();
-          tiles.add(new BufferedArtImage(reader.read(0, params)));
-          reader.dispose();
-        } catch (IOException e) {
-          throw new IllegalArgumentException();
-        }
-      }
-      if (tiles.size() < REQUIRED_IMAGE_COUNT) {
-        throw new IllegalArgumentException();
-      }
-    } catch (MalformedURLException e) {
-      System.err.println("Invalid or missing tiles path passed!");
-      System.exit(1);
-    } catch (IllegalArgumentException e) {
-      System.err.println("Too few tile images provided or unsupported image format specified!");
-      System.exit(1);
-    }
-    return tiles;
-  }
-
-  private static File fetchOutputDir(CommandLine cmd) {
-
-    File outputDir = new File(cmd.getOptionValue(CMD_OPTION_OUTPUT_IMAGE, MISSING));
-    if (outputDir.isDirectory() || outputDir.isFile()) {
-      return outputDir;
-    } else {
-      System.err.println("Invalid or missing output path passed!");
-      System.exit(1);
-      return null;
-    }
-  }
-
-  private static int fetchTilesWidth(CommandLine cmd) {
-
-    int tilesWidth = 0;
-    try {
-      tilesWidth = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_W, MISSING));
-
-    } catch (NumberFormatException e) {
-      System.err.println("Illegal number format for tiles width passed!");
-      System.exit(1);
-    }
-    return tilesWidth;
-  }
-
-  private static int fetchTilesHeight(CommandLine cmd) {
-
-    int tilesHeight = 0;
-    try {
-      tilesHeight = Integer.parseInt(cmd.getOptionValue(CMD_OPTION_TILE_H, MISSING));
-    } catch (NumberFormatException e) {
-      System.err.println("Illegal number format for tiles height passed!");
-      System.exit(1);
-    }
-    return tilesHeight;
-  }
-
-  private static void verifyDimensions(int tilesWidth, int tilesHeight) {
-
-    try {
-      if (tilesWidth != Math.round(input.getWidth() / REQUITED_SIZE_REDUCTION_RATIO) && tilesWidth != 0) {
-        throw new NumberFormatException();
-      }
-      if (tilesHeight != Math.round(input.getHeight() / REQUITED_SIZE_REDUCTION_RATIO) && tilesHeight != 0) {
-        throw new NumberFormatException();
-      }
-    } catch (NumberFormatException e) {
-      System.err.println("Invalid value for tiles width or/and height passed!");
-      System.exit(1);
-    }
-  }
-
-  private static void writeOutput(BufferedImage output, File outputDir) {
-
-    try {
-      ImageIO.write(output, "png", outputDir);
-    } catch (IOException e) {
-      System.err.println("Cannot write mosaique to file!");
-      System.exit(1);
-    }
-  }
 }
