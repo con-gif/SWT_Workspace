@@ -27,6 +27,7 @@ public class JavaCrashCourse extends PluginForJmjrst {
     private static final String JAVA_14 = "Java 14 (non‑LTS)";
 
     private List<String> javaStableReleases;
+    private int numberOfParameters;
 
     @Override
     public String getName() {
@@ -35,12 +36,14 @@ public class JavaCrashCourse extends PluginForJmjrst {
 
     @Override
     public int getNumberOfParameters() {
-        return javaStableReleases.size();
+        return numberOfParameters;
     }
 
     @Override
     public void init(Main main) {
         javaStableReleases = List.of(JAVA_8_LTS, JAVA_9, JAVA_10, JAVA_11_LTS, JAVA_12, JAVA_13, JAVA_14);
+        numberOfParameters = javaStableReleases.size();
+        System.out.printf("Found %d Java versions since Java 8\n", numberOfParameters);
     }
 
     @Override
