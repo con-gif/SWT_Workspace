@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.kohsuke.MetaInfServices;
+
+@MetaInfServices
 public class JavaCrashCourse extends PluginForJmjrst {
 
     private static final String NAME = "Java Crash Course";
