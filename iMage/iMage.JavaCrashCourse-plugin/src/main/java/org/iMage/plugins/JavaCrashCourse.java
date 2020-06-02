@@ -57,6 +57,7 @@ public class JavaCrashCourse extends PluginForJmjrst {
         switch (release) {
             case JAVA_14:
                 System.out.println(KEEPING_UPDATED);
+                break;
             case JAVA_8_LTS:
             case JAVA_9:
             case JAVA_10:
@@ -64,8 +65,10 @@ public class JavaCrashCourse extends PluginForJmjrst {
             case JAVA_12:
             case JAVA_13:
                 System.out.println(RUNNING_LATE);
+                break;
             default:
                 System.out.println(String.format("%s(%d)", NAME, getNumberOfParameters()));
+                break;
         }
     }
 
