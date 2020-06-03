@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
  * @version 1.0
  *
  */
-public class GUI implements ActionListener {
+public final class GUI implements ActionListener {
 
     private JFrame frame;
     private JPanel panel;
@@ -81,15 +81,12 @@ public class GUI implements ActionListener {
         artistType = new JComboBox(new String[] {"Rectangle", "Triangle"});
         artistType.setSelectedIndex(0);
 
-
         panel.add(tileSize);
         panel.add(tileWidth);
         panel.add(times);
         panel.add(tileHeight);
         panel.add(artist);
         panel.add(artistType);
-
-
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setTitle("iTiler");
