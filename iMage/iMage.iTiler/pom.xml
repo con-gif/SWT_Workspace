@@ -17,6 +17,11 @@
             <artifactId>jmjrst.main</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>swt1</groupId>
+            <artifactId>iMage.mosaique</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
