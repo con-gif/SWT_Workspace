@@ -12,6 +12,7 @@
         <module name="2313306" />
         <module name="iMage.bundle" />
         <module name="iMage.JavaCrashCourse-plugin" />
+        <module name="iMage.iTiler" />
       </profile>
     </annotationProcessing>
   </component>
