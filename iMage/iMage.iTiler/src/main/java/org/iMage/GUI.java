@@ -47,7 +47,7 @@ public final class GUI {
     protected static JTextField tileWidth;
     protected static JTextField tileHeight;
 
-    private JComboBox artistType;
+    protected static JComboBox artistType;
 
     private BufferedImage input;
     private BufferedImage output;
@@ -168,6 +168,8 @@ public final class GUI {
         loadInput.addActionListener(listener);
         saveResult.addActionListener(listener);
         loadTiles.addActionListener(listener);
+        showTiles.addActionListener(listener);
+        run.addActionListener(listener);
 
     }
 }

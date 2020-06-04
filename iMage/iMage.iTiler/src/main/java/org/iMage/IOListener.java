@@ -1,8 +1,10 @@
 package org.iMage;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class IOListener implements ActionListener {
 
@@ -27,6 +29,19 @@ public class IOListener implements ActionListener {
             }
             GUI.tileWidth.setText("");
             GUI.tileHeight.setText("");
+        } else if (e.getSource() == GUI.showTiles) {
+            
+        } else if (e.getSource() == GUI.run) {
+            switch (Objects.requireNonNull(GUI.artistType.getSelectedItem()).toString()) {
+                case "Rectangle":
+                    //do asdf
+                    break;
+                case "Triangle":
+                    //do asdf
+                    break;
+                default:
+                    break;
+            }
         }
 
     }
