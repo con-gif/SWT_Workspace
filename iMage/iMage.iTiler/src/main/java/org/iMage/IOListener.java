@@ -1,7 +1,9 @@
 package org.iMage;
 
+import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
 import org.iMage.mosaique.rectangle.RectangleArtist;
+import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -104,10 +106,10 @@ public class IOListener implements ActionListener {
             if (GUI.tiles.size() < 10) {
                 JOptionPane.showMessageDialog(null, "At least 10 images required for this task!",
                         "Error", JOptionPane.ERROR_MESSAGE);
-                GUI.tiles = new ArrayList<>();
             }
 
             GUI.artist = new RectangleArtist(GUI.tiles, tileWidth, tileHeight);
+            GUI.tiles = new ArrayList<>();
         } catch (NumberFormatException exception) {
             JOptionPane.showMessageDialog(null, "Illegal tile size specified!",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -127,7 +129,7 @@ public class IOListener implements ActionListener {
         panel.setLayout(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        List<BufferedImage> thumbnails = new ArrayList<>();
+        List<BufferedImage> thumbnails;
         thumbnails = GUI.artist.getThumbnails();
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(2, 2, 2, 2);
@@ -161,15 +163,29 @@ public class IOListener implements ActionListener {
     }
 
     private static void handleRun() {
-        switch (Objects.requireNonNull(GUI.artistType.getSelectedItem()).toString()) {
-            case "Rectangle":
-                // run for rectangle
-                break;
-            case "Triangle":
-                //run for triangle
-                break;
-            default:
-                break;
+        if (GUI.artist == null) {
+            JOptionPane.showMessageDialog(null, "Please select tile images first!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            List<BufferedArtImage> thumbnails = new ArrayList<>();
+            for (Object thumbnail : GUI.artist.getThumbnails()) {
+                thumbnails.add(new BufferedArtImage((BufferedImage) thumbnail));
+            }
+
+            switch (Objects.requireNonNull(GUI.artistType.getSelectedItem()).toString()) {
+                case "Rectangle":
+                    GUI.artist = new RectangleArtist(thumbnails, tileWidth, tileHeight);
+                    break;
+                case "Triangle":
+                    GUI.artist = new TriangleArtist(thumbnails, tileWidth, tileHeight);
+                    break;
+                default:
+                    break;
+            }
+            GUI.easel = new MosaiqueEasel();
+            GUI.output = GUI.easel.createMosaique(GUI.input, GUI.artist);
+            GUI.populatePreviewLabel();
         }
+
     }
 }

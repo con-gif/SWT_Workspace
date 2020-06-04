@@ -1,7 +1,8 @@
 package org.iMage;
 
+import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
-import org.iMage.mosaique.rectangle.RectangleArtist;
+import org.iMage.mosaique.base.IMosaiqueArtist;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -35,7 +36,7 @@ public final class GUI {
     private JPanel panel;
 
     private static JLabel inputImage;
-    private static JLabel preview;
+    private static JLabel previewImage;
     private GridBagConstraints constraints;
 
     protected static JButton loadInput;
@@ -57,7 +58,8 @@ public final class GUI {
     protected static BufferedImage output;
     protected static List<BufferedArtImage> tiles;
 
-    protected static RectangleArtist artist;
+    protected static IMosaiqueArtist artist;
+    protected static MosaiqueEasel easel;
 
 
     private GUI() {
@@ -73,6 +75,7 @@ public final class GUI {
 
     public static void populatePreviewLabel() {
         inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
+        previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
     }
 
     private void initializeComponents() {
@@ -93,8 +96,8 @@ public final class GUI {
         }
         inputImage = new JLabel();
         inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
-        preview = new JLabel();
-        preview.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
+        previewImage = new JLabel();
+        previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
 
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.gridwidth = 5;
@@ -104,7 +107,7 @@ public final class GUI {
         constraints.gridwidth = 5;
         constraints.gridx = 6;
         constraints.gridy = 0;
-        panel.add(preview, constraints);
+        panel.add(previewImage, constraints);
 
         loadInput = new JButton("Load input");
         saveResult = new JButton("Save result");
