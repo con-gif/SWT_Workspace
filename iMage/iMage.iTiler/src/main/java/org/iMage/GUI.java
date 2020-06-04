@@ -34,10 +34,10 @@ public final class GUI {
 
     private JFrame frame;
     private JPanel panel;
+    private GridBagConstraints constraints;
 
     private static JLabel inputImage;
     private static JLabel previewImage;
-    private GridBagConstraints constraints;
 
     protected static JButton loadInput;
     protected static JButton saveResult;

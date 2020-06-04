@@ -6,15 +6,7 @@ import org.iMage.mosaique.rectangle.RectangleArtist;
 import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -65,10 +57,10 @@ public class IOListener implements ActionListener {
     private void handleLoadInput() {
         fileChooser.showOpenDialog(GUI.loadInput);
 
-        // read URL, check file format and populate GUI.input
+        // read URL, check file format and save imported image in GUI.input
         File selection = fileChooser.getSelectedFile();
         if (selection != null && selection.getAbsolutePath().endsWith("jpg")
-                || selection.getAbsolutePath().endsWith("jpeg")
+                || Objects.requireNonNull(selection).getAbsolutePath().endsWith("jpeg")
                 || selection.getAbsolutePath().endsWith("png")) {
 
             try {
@@ -89,20 +81,49 @@ public class IOListener implements ActionListener {
     }
 
     private void handleLoadTiles() {
-        // read URL, populate GUI.tiles with all image files in directory. Min 10 images required.
+        // read URL, initialize GUI.artist. Min 10 images required.
         fileChooser.setMultiSelectionEnabled(true);
         try {
             tileWidth = Integer.parseInt(GUI.tileWidth.getText());
             tileHeight = Integer.parseInt(GUI.tileHeight.getText());
             fileChooser.showOpenDialog(GUI.loadTiles);
             File[] tiles = fileChooser.getSelectedFiles();
+
+            JFrame progress = new JFrame();
+            JPanel panel = new JPanel();
+            JProgressBar progressBar = new JProgressBar();
+            int count = 0;
+
+            progress.setLayout(new FlowLayout());
+            progressBar.setMinimum(count);
+            progressBar.setMaximum(tiles.length);
+
+            progressBar.setValue(0);
+            progressBar.setStringPainted(true);
+
+            panel.add(progressBar);
+            progress.add(panel);
+            progress.pack();
+            progress.setVisible(true);
+            progress.setResizable(false);
+            progress.setTitle("Loading images...");
+            progress.setSize(300, 100);
+
             for (File tile : tiles) {
                 if (tile.getAbsolutePath().endsWith("jpg")
                         || tile.getAbsolutePath().endsWith("jpeg")
                         || tile.getAbsolutePath().endsWith("png")) {
                     GUI.tiles.add(new BufferedArtImage(ImageIO.read(tile)));
                 }
+                count++;
+                progressBar.setValue(count);
+                progressBar.setString(String.format("Importing file %d of %d", count, tiles.length));
+                progressBar.setStringPainted(true);
+                panel.add(progressBar);
+                progress.add(panel);
             }
+            progress.dispose();
+
             if (GUI.tiles.size() < 10) {
                 JOptionPane.showMessageDialog(null, "At least 10 images required for this task!",
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -116,6 +137,7 @@ public class IOListener implements ActionListener {
         }catch (IOException ioException) {
             ioException.printStackTrace();
         }
+
         GUI.tileWidth.setText("");
         GUI.tileHeight.setText("");
         fileChooser.setMultiSelectionEnabled(false);
@@ -129,6 +151,7 @@ public class IOListener implements ActionListener {
         panel.setLayout(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // creating a 7 x 7 grid.
         List<BufferedImage> thumbnails;
         thumbnails = GUI.artist.getThumbnails();
         GridBagConstraints constraints = new GridBagConstraints();
@@ -159,10 +182,13 @@ public class IOListener implements ActionListener {
         showFrame.setLocationByPlatform(true);
         showFrame.setVisible(true);
         showFrame.setResizable(false);
+        showFrame.setTitle("Your selection");
         showFrame.setSize(530, 530);
     }
 
     private static void handleRun() {
+
+        // GUI.artist ist not null precisely when tiles have already been successfully imported.
         if (GUI.artist == null) {
             JOptionPane.showMessageDialog(null, "Please select tile images first!",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -185,7 +211,9 @@ public class IOListener implements ActionListener {
             GUI.easel = new MosaiqueEasel();
             GUI.output = GUI.easel.createMosaique(GUI.input, GUI.artist);
             GUI.populatePreviewLabel();
-        }
 
+            // Preparing for a new cycle.
+            GUI.artist = null;
+        }
     }
 }
