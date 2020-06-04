@@ -6,7 +6,6 @@ import org.iMage.mosaique.rectangle.RectangleArtist;
 import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -92,7 +91,7 @@ public class IOListener implements ActionListener {
     }
 
     private void handleSaveResult() {
-
+        // save GUI.output to selected filepath
         try {
             if (GUI.output == null) {
                 throw new IllegalArgumentException();
@@ -154,9 +153,6 @@ public class IOListener implements ActionListener {
                 count++;
                 progressBar.setValue(count);
                 progressBar.setString(String.format("Importing file %d of %d", count, tiles.length));
-                progressBar.setStringPainted(true);
-                panel.add(progressBar);
-                progress.add(panel);
             }
             progress.dispose();
 
@@ -191,9 +187,8 @@ public class IOListener implements ActionListener {
         JPanel panel = new JPanel();
         panel.setBackground(new Color(253, 253, 253));
         panel.setLayout(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // creating a 7 x 7 grid.
+        // creating a 7 column grid.
         List<BufferedImage> thumbnails;
         thumbnails = GUI.artist.getThumbnails();
         GridBagConstraints constraints = new GridBagConstraints();
@@ -228,7 +223,7 @@ public class IOListener implements ActionListener {
 
     private void handleRun() {
 
-        // GUI.artist ist not null precisely when tiles have already been successfully imported.
+        // GUI.artist is not null precisely when tiles have already been successfully imported.
         if (GUI.artist == null) {
             JOptionPane.showMessageDialog(null, "Please select tile images first!",
                     "Error", JOptionPane.ERROR_MESSAGE);
