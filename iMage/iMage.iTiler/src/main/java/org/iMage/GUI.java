@@ -1,10 +1,18 @@
 package org.iMage;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +25,7 @@ import java.util.List;
  * @version 1.0
  *
  */
-public final class GUI implements ActionListener {
+public final class GUI {
 
     private JFrame frame;
     private JPanel panel;
@@ -26,18 +34,18 @@ public final class GUI implements ActionListener {
     private JLabel preview;
     private GridBagConstraints constraints;
 
-    private JButton loadInput;
-    private JButton saveResult;
-    private JButton loadTiles;
-    private JButton showTiles;
-    private JButton run;
+    protected static JButton loadInput;
+    protected static JButton saveResult;
+    protected static JButton loadTiles;
+    protected static JButton showTiles;
+    protected static JButton run;
 
     private JLabel tileSize;
     private JLabel times;
     private JLabel artist;
 
-    private JTextField tileWidth;
-    private JTextField tileHeight;
+    protected static JTextField tileWidth;
+    protected static JTextField tileHeight;
 
     private JComboBox artistType;
 
@@ -155,16 +163,11 @@ public final class GUI implements ActionListener {
 
     private void initializeListeners() {
 
-        loadInput.addActionListener(this);
-        saveResult.addActionListener(this);
-        loadTiles.addActionListener(this);
-        showTiles.addActionListener(this);
-        run.addActionListener(this);
+        IOListener listener = new IOListener();
 
-    }
+        loadInput.addActionListener(listener);
+        saveResult.addActionListener(listener);
+        loadTiles.addActionListener(listener);
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        
     }
 }
