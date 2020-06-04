@@ -6,15 +6,26 @@ import org.iMage.mosaique.rectangle.RectangleArtist;
 import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollBar;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -83,7 +94,7 @@ public class IOListener implements ActionListener {
     private void handleSaveResult() {
 
         try {
-            if(GUI.output == null) {
+            if (GUI.output == null) {
                 throw new IllegalArgumentException();
             }
 
@@ -197,7 +208,7 @@ public class IOListener implements ActionListener {
             col++;
             if (col >= 7) {
                 col %= 7;
-                row ++;
+                row++;
             }
         }
         constraints.gridx = 7;
@@ -255,8 +266,8 @@ public class IOListener implements ActionListener {
             GUI.tileWidth.setForeground(Color.RED);
             GUI.tileHeight.setForeground(Color.RED);
             JOptionPane.showMessageDialog(null,
-                    "If you run the loader with these values, iTiler will not be able to " +
-                            "set a proper dimension to your photos!",
+                    "If you run the loader with these values, iTiler will not be able to "
+                            + "set a proper dimension to your photos!",
                     "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             GUI.tileWidth.setForeground(Color.BLACK);
