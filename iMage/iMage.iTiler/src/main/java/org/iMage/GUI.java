@@ -78,7 +78,9 @@ public final class GUI {
 
     public static void populatePreviewLabels() {
         inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
-        previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
+        if (output != null) {
+            previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
+        }
     }
 
     private void initializeComponents() {
@@ -114,6 +116,7 @@ public final class GUI {
 
         loadInput = new JButton("Load input");
         saveResult = new JButton("Save result");
+        saveResult.setEnabled(false);
         loadTiles = new JButton("Load tiles");
         showTiles = new JButton("Show tiles");
         run = new JButton("Run");
@@ -187,6 +190,9 @@ public final class GUI {
         loadTiles.addActionListener(listener);
         showTiles.addActionListener(listener);
         run.addActionListener(listener);
+
+        tileWidth.addActionListener(listener);
+        tileHeight.addActionListener(listener);
 
     }
 }

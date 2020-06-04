@@ -14,8 +14,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Action handling class for iMage GUI.
@@ -46,10 +49,12 @@ public class IOListener implements ActionListener {
         } else if (e.getSource() == GUI.run) {
 
             handleRun();
+        } else if (e.getSource() == GUI.tileWidth || e.getSource() == GUI.tileHeight) {
+
+            handleTileDimensionsValidation();
         }
 
     }
-
 
     private void handleLoadInput() {
         fileChooser.showOpenDialog(GUI.loadInput);
@@ -100,12 +105,12 @@ public class IOListener implements ActionListener {
 
     private void handleLoadTiles() {
         // read URL, initialize GUI.artist. Min 10 images required.
-        fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         try {
             tileWidth = Integer.parseInt(GUI.tileWidth.getText());
             tileHeight = Integer.parseInt(GUI.tileHeight.getText());
             fileChooser.showOpenDialog(GUI.loadTiles);
-            File[] tiles = fileChooser.getSelectedFiles();
+            File[] tiles = fileChooser.getSelectedFile().listFiles();
 
             JFrame progress = new JFrame();
             JPanel panel = new JPanel();
@@ -163,7 +168,7 @@ public class IOListener implements ActionListener {
 
         GUI.tileWidth.setText("");
         GUI.tileHeight.setText("");
-        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     }
 
     private void handleShowTiles() {
@@ -185,9 +190,6 @@ public class IOListener implements ActionListener {
         int col = 0;
         int row = 0;
         for (BufferedImage image : thumbnails) {
-            if (row >= 7) {
-                break;
-            }
             constraints.gridx = col % 7;
             constraints.gridy = row;
 
@@ -198,10 +200,11 @@ public class IOListener implements ActionListener {
                 row ++;
             }
         }
-
-        JScrollPane scroller = new JScrollPane(panel);
-        scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        constraints.gridx = 7;
+        constraints.gridy = 0;
+        JScrollBar scrollBar = new JScrollBar(JScrollBar.VERTICAL);
+        scrollBar.setBounds(520, 0, 10, 530);
+        //panel.add(scrollBar, constraints);
 
         showFrame.add(panel, FlowLayout.LEFT);
         showFrame.pack();
@@ -240,6 +243,24 @@ public class IOListener implements ActionListener {
 
             // Preparing for a new cycle.
             GUI.artist = null;
+
+            GUI.saveResult.setEnabled(true);
+        }
+    }
+
+    private void handleTileDimensionsValidation() {
+        Pattern pattern = Pattern.compile("[^0-9]");
+        Matcher matcher = pattern.matcher(GUI.tileWidth.getText() + GUI.tileHeight.getText());
+        if (matcher.find()) {
+            GUI.tileWidth.setForeground(Color.RED);
+            GUI.tileHeight.setForeground(Color.RED);
+            JOptionPane.showMessageDialog(null,
+                    "If you run the loader with these values, iTiler will not be able to " +
+                            "set a proper dimension to your photos!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            GUI.tileWidth.setForeground(Color.BLACK);
+            GUI.tileHeight.setForeground(Color.BLACK);
         }
     }
 }
