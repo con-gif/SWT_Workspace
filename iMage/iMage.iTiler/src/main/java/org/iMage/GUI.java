@@ -1,5 +1,8 @@
 package org.iMage;
 
+import org.iMage.mosaique.base.BufferedArtImage;
+import org.iMage.mosaique.rectangle.RectangleArtist;
+
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -16,6 +19,7 @@ import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,8 +34,8 @@ public final class GUI {
     private JFrame frame;
     private JPanel panel;
 
-    private JLabel inputImage;
-    private JLabel preview;
+    private static JLabel inputImage;
+    private static JLabel preview;
     private GridBagConstraints constraints;
 
     protected static JButton loadInput;
@@ -42,33 +46,39 @@ public final class GUI {
 
     private JLabel tileSize;
     private JLabel times;
-    private JLabel artist;
+    private JLabel artistLabel;
 
     protected static JTextField tileWidth;
     protected static JTextField tileHeight;
 
     protected static JComboBox artistType;
 
-    private BufferedImage input;
-    private BufferedImage output;
-    private List<BufferedImage> tiles;
+    protected static BufferedImage input;
+    protected static BufferedImage output;
+    protected static List<BufferedArtImage> tiles;
+
+    protected static RectangleArtist artist;
 
 
     private GUI() {
 
-    initializeComponents();
-    initializeListeners();
-
+        tiles = new ArrayList<>();
+        initializeComponents();
+        initializeListeners();
     }
 
     public static void main(String[] args) {
         new GUI();
     }
 
+    public static void populatePreviewLabel() {
+        inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
+    }
+
     private void initializeComponents() {
         frame = new JFrame();
         panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setLayout(new GridBagLayout());
 
         constraints = new GridBagConstraints();
@@ -113,7 +123,7 @@ public final class GUI {
 
         tileSize = new JLabel("Tile size");
         times = new JLabel("X");
-        artist = new JLabel("Artist");
+        artistLabel = new JLabel("Artist");
 
         tileWidth = new JTextField("", 4);
         tileHeight = new JTextField("", 4);
@@ -144,7 +154,7 @@ public final class GUI {
         panel.add(showTiles, constraints);
         constraints.gridx = 7;
         constraints.gridy = 2;
-        panel.add(artist, constraints);
+        panel.add(artistLabel, constraints);
         constraints.gridx = 8;
         constraints.gridy = 2;
         panel.add(artistType, constraints);
