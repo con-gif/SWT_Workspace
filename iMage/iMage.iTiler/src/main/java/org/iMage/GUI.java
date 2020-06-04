@@ -1,18 +1,14 @@
 package org.iMage;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * iMage GUI class.
@@ -28,6 +24,7 @@ public final class GUI implements ActionListener {
 
     private JLabel inputImage;
     private JLabel preview;
+    private GridBagConstraints constraints;
 
     private JButton loadInput;
     private JButton saveResult;
@@ -44,12 +41,52 @@ public final class GUI implements ActionListener {
 
     private JComboBox artistType;
 
+    private BufferedImage input;
+    private BufferedImage output;
+    private List<BufferedImage> tiles;
+
 
     private GUI() {
+
+    initializeComponents();
+    initializeListeners();
+
+    }
+
+    public static void main(String[] args) {
+        new GUI();
+    }
+
+    private void initializeComponents() {
         frame = new JFrame();
         panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30));
         panel.setLayout(new GridBagLayout());
+
+        constraints = new GridBagConstraints();
+
+        URL inputUrl = getClass().getResource("/input.jpg");
+        URL previewURL = getClass().getResource("/preview.png");
+        try {
+            input = ImageIO.read(inputUrl);
+            output = ImageIO.read(previewURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        inputImage = new JLabel();
+        inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
+        preview = new JLabel();
+        preview.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
+
+        constraints.insets = new Insets(10, 10, 10, 10);
+        constraints.gridwidth = 5;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        panel.add(inputImage, constraints);
+        constraints.gridwidth = 5;
+        constraints.gridx = 6;
+        constraints.gridy = 0;
+        panel.add(preview, constraints);
 
         loadInput = new JButton("Load input");
         saveResult = new JButton("Save result");
@@ -57,19 +94,14 @@ public final class GUI implements ActionListener {
         showTiles = new JButton("Show tiles");
         run = new JButton("Run");
 
-        loadInput.addActionListener(this);
-        saveResult.addActionListener(this);
-        loadTiles.addActionListener(this);
-        showTiles.addActionListener(this);
-        run.addActionListener(this);
-
-        panel.add(loadInput);
-        panel.add(saveResult);
-        panel.add(loadTiles);
-        panel.add(showTiles);
-        panel.add(run);
-
-        panel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        constraints.gridwidth = 5;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        panel.add(loadInput, constraints);
+        constraints.gridwidth = 5;
+        constraints.gridx = 6;
+        constraints.gridy = 1;
+        panel.add(saveResult, constraints);
 
         tileSize = new JLabel("Tile size");
         times = new JLabel("X");
@@ -81,12 +113,36 @@ public final class GUI implements ActionListener {
         artistType = new JComboBox(new String[] {"Rectangle", "Triangle"});
         artistType.setSelectedIndex(0);
 
-        panel.add(tileSize);
-        panel.add(tileWidth);
-        panel.add(times);
-        panel.add(tileHeight);
-        panel.add(artist);
-        panel.add(artistType);
+        constraints.insets = new Insets(5, 5, 5, 5);
+        constraints.gridwidth = 1;
+        constraints.weighty = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        panel.add(tileSize, constraints);
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        panel.add(tileWidth, constraints);
+        constraints.gridx = 3;
+        constraints.gridy = 2;
+        panel.add(times, constraints);
+        constraints.gridx = 4;
+        constraints.gridy = 2;
+        panel.add(tileHeight, constraints);
+        constraints.gridx = 5;
+        constraints.gridy = 2;
+        panel.add(loadTiles, constraints);
+        constraints.gridx = 6;
+        constraints.gridy = 2;
+        panel.add(showTiles, constraints);
+        constraints.gridx = 7;
+        constraints.gridy = 2;
+        panel.add(artist, constraints);
+        constraints.gridx = 8;
+        constraints.gridy = 2;
+        panel.add(artistType, constraints);
+        constraints.gridx = 9;
+        constraints.gridy = 2;
+        panel.add(run, constraints);
 
         frame.add(panel, BorderLayout.CENTER);
         frame.setTitle("iTiler");
@@ -95,15 +151,20 @@ public final class GUI implements ActionListener {
         frame.setVisible(true);
         frame.setResizable(false);
         frame.setSize(800, 450);
-
-
     }
-    public static void main(String[] args) {
-        new GUI();
+
+    private void initializeListeners() {
+
+        loadInput.addActionListener(this);
+        saveResult.addActionListener(this);
+        loadTiles.addActionListener(this);
+        showTiles.addActionListener(this);
+        run.addActionListener(this);
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        
     }
 }
