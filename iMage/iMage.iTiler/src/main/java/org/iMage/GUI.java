@@ -73,7 +73,7 @@ public final class GUI {
         new GUI();
     }
 
-    public static void populatePreviewLabel() {
+    public static void populatePreviewLabels() {
         inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
         previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
     }

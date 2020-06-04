@@ -65,7 +65,7 @@ public class IOListener implements ActionListener {
 
             try {
                 GUI.input = ImageIO.read(selection);
-                GUI.populatePreviewLabel();
+                GUI.populatePreviewLabels();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -143,7 +143,7 @@ public class IOListener implements ActionListener {
         fileChooser.setMultiSelectionEnabled(false);
     }
 
-    private static void handleShowTiles() {
+    private void handleShowTiles() {
 
         JFrame showFrame = new JFrame();
         showFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -186,7 +186,7 @@ public class IOListener implements ActionListener {
         showFrame.setSize(530, 530);
     }
 
-    private static void handleRun() {
+    private void handleRun() {
 
         // GUI.artist ist not null precisely when tiles have already been successfully imported.
         if (GUI.artist == null) {
@@ -210,7 +210,7 @@ public class IOListener implements ActionListener {
             }
             GUI.easel = new MosaiqueEasel();
             GUI.output = GUI.easel.createMosaique(GUI.input, GUI.artist);
-            GUI.populatePreviewLabel();
+            GUI.populatePreviewLabels();
 
             // Preparing for a new cycle.
             GUI.artist = null;
