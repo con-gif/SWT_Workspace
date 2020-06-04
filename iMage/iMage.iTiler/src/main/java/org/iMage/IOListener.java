@@ -7,10 +7,7 @@ import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -59,7 +56,10 @@ public class IOListener implements ActionListener {
 
         // read URL, check file format and save imported image in GUI.input
         File selection = fileChooser.getSelectedFile();
-        if (selection != null && selection.getAbsolutePath().endsWith("jpg")
+        if (selection == null) {
+            return;
+        }
+        if (selection.getAbsolutePath().endsWith("jpg")
                 || Objects.requireNonNull(selection).getAbsolutePath().endsWith("jpeg")
                 || selection.getAbsolutePath().endsWith("png")) {
 
@@ -69,7 +69,7 @@ public class IOListener implements ActionListener {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-        } else if (selection != null) {
+        } else {
             JOptionPane.showMessageDialog(null, "File not an image!",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -77,7 +77,25 @@ public class IOListener implements ActionListener {
 
     private void handleSaveResult() {
 
-        fileChooser.showSaveDialog(GUI.saveResult);
+        try {
+            if(GUI.output == null) {
+                throw new IllegalArgumentException();
+            }
+
+            fileChooser.showSaveDialog(GUI.saveResult);
+            File destination = fileChooser.getSelectedFile();
+            if (destination == null) {
+                throw new IOException();
+            }
+            
+            ImageIO.write(GUI.output, "png", destination);
+        } catch (IOException ioException) {
+            JOptionPane.showMessageDialog(null, "Please, try again!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            JOptionPane.showMessageDialog(null, "Try selecting tile images and clicking run first ;-)",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void handleLoadTiles() {
@@ -91,6 +109,7 @@ public class IOListener implements ActionListener {
 
             JFrame progress = new JFrame();
             JPanel panel = new JPanel();
+            panel.setBackground(new Color(253, 253, 253));
             JProgressBar progressBar = new JProgressBar();
             int count = 0;
 
@@ -109,6 +128,7 @@ public class IOListener implements ActionListener {
             progress.setTitle("Loading images...");
             progress.setSize(300, 100);
 
+            new Thread();
             for (File tile : tiles) {
                 if (tile.getAbsolutePath().endsWith("jpg")
                         || tile.getAbsolutePath().endsWith("jpeg")
@@ -127,6 +147,7 @@ public class IOListener implements ActionListener {
             if (GUI.tiles.size() < 10) {
                 JOptionPane.showMessageDialog(null, "At least 10 images required for this task!",
                         "Error", JOptionPane.ERROR_MESSAGE);
+                throw new IllegalArgumentException();
             }
 
             GUI.artist = new RectangleArtist(GUI.tiles, tileWidth, tileHeight);
@@ -134,8 +155,10 @@ public class IOListener implements ActionListener {
         } catch (NumberFormatException exception) {
             JOptionPane.showMessageDialog(null, "Illegal tile size specified!",
                     "Error", JOptionPane.ERROR_MESSAGE);
-        }catch (IOException ioException) {
+        } catch (IOException ioException) {
             ioException.printStackTrace();
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // all fine
         }
 
         GUI.tileWidth.setText("");
@@ -144,10 +167,13 @@ public class IOListener implements ActionListener {
     }
 
     private void handleShowTiles() {
-
+        if (GUI.artist == null) {
+            return;
+        }
         JFrame showFrame = new JFrame();
         showFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(253, 253, 253));
         panel.setLayout(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 

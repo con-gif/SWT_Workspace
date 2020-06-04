@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -55,6 +56,7 @@ public final class GUI {
     protected static JComboBox artistType;
 
     protected static BufferedImage input;
+    protected static BufferedImage preview;
     protected static BufferedImage output;
     protected static List<BufferedArtImage> tiles;
 
@@ -64,6 +66,7 @@ public final class GUI {
 
     private GUI() {
 
+        output = null;
         tiles = new ArrayList<>();
         initializeComponents();
         initializeListeners();
@@ -81,7 +84,7 @@ public final class GUI {
     private void initializeComponents() {
         frame = new JFrame();
         panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         panel.setLayout(new GridBagLayout());
 
         constraints = new GridBagConstraints();
@@ -90,22 +93,22 @@ public final class GUI {
         URL previewURL = getClass().getResource("/preview.png");
         try {
             input = ImageIO.read(inputUrl);
-            output = ImageIO.read(previewURL);
+            preview = ImageIO.read(previewURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
         inputImage = new JLabel();
         inputImage.setIcon(new ImageIcon(input.getScaledInstance(350, 250, 0)));
         previewImage = new JLabel();
-        previewImage.setIcon(new ImageIcon(output.getScaledInstance(350, 250, 0)));
+        previewImage.setIcon(new ImageIcon(preview.getScaledInstance(350, 250, 0)));
 
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.gridwidth = 5;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(inputImage, constraints);
         constraints.gridwidth = 5;
-        constraints.gridx = 6;
+        constraints.gridx = 5;
         constraints.gridy = 0;
         panel.add(previewImage, constraints);
 
@@ -116,11 +119,11 @@ public final class GUI {
         run = new JButton("Run");
 
         constraints.gridwidth = 5;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 1;
         panel.add(loadInput, constraints);
         constraints.gridwidth = 5;
-        constraints.gridx = 6;
+        constraints.gridx = 5;
         constraints.gridy = 1;
         panel.add(saveResult, constraints);
 
@@ -137,34 +140,35 @@ public final class GUI {
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.gridwidth = 1;
         constraints.weighty = 1;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 2;
         panel.add(tileSize, constraints);
-        constraints.gridx = 2;
+        constraints.gridx = 1;
         constraints.gridy = 2;
         panel.add(tileWidth, constraints);
-        constraints.gridx = 3;
+        constraints.gridx = 2;
         constraints.gridy = 2;
         panel.add(times, constraints);
-        constraints.gridx = 4;
+        constraints.gridx = 3;
         constraints.gridy = 2;
         panel.add(tileHeight, constraints);
-        constraints.gridx = 5;
+        constraints.gridx = 4;
         constraints.gridy = 2;
         panel.add(loadTiles, constraints);
-        constraints.gridx = 6;
+        constraints.gridx = 5;
         constraints.gridy = 2;
         panel.add(showTiles, constraints);
-        constraints.gridx = 7;
+        constraints.gridx = 6;
         constraints.gridy = 2;
         panel.add(artistLabel, constraints);
-        constraints.gridx = 8;
+        constraints.gridx = 7;
         constraints.gridy = 2;
         panel.add(artistType, constraints);
         constraints.gridx = 9;
         constraints.gridy = 2;
         panel.add(run, constraints);
 
+        panel.setBackground(new Color(253, 253, 253));
         frame.add(panel, BorderLayout.CENTER);
         frame.setTitle("iTiler");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
