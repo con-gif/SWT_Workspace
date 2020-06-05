@@ -6,7 +6,14 @@ import org.iMage.mosaique.rectangle.RectangleArtist;
 import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -173,6 +180,8 @@ public class IOListener implements ActionListener {
 
     private void handleShowTiles() {
         if (GUI.artist == null) {
+            JOptionPane.showMessageDialog(null, "Please, select some tiles first!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         JFrame showFrame = new JFrame();
