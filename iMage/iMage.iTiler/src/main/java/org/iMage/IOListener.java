@@ -6,14 +6,7 @@ import org.iMage.mosaique.rectangle.RectangleArtist;
 import org.iMage.mosaique.triangle.TriangleArtist;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollBar;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -206,19 +199,17 @@ public class IOListener implements ActionListener {
                 row++;
             }
         }
-        constraints.gridx = 7;
-        constraints.gridy = 0;
-        JScrollBar scrollBar = new JScrollBar(JScrollBar.VERTICAL);
-        scrollBar.setBounds(520, 0, 10, 530);
-        //panel.add(scrollBar, constraints);
 
-        showFrame.add(panel, FlowLayout.LEFT);
+        JScrollPane scroll = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        showFrame.add(scroll, FlowLayout.LEFT);
         showFrame.pack();
         showFrame.setLocationByPlatform(true);
         showFrame.setVisible(true);
         showFrame.setResizable(false);
         showFrame.setTitle("Your selection");
-        showFrame.setSize(530, 530);
+        showFrame.setSize(550, 530);
     }
 
     private void handleRun() {
