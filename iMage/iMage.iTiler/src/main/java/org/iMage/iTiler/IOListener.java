@@ -1,4 +1,4 @@
-package org.iMage;
+package org.iMage.iTiler;
 
 import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Action handling class for iMage GUI.
+ * Action handling class for iTiler GUI.
  *
  * @author Kaloyan Draganov
  * @version 1.0

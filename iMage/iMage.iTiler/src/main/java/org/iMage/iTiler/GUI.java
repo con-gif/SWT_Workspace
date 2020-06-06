@@ -1,4 +1,4 @@
-package org.iMage;
+package org.iMage.iTiler;
 
 import org.iMage.mosaique.MosaiqueEasel;
 import org.iMage.mosaique.base.BufferedArtImage;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * iMage GUI class.
+ * iTiler GUI class.
  *
  * @author Kaloyan Draganov
  * @version 1.0
