@@ -33,7 +33,9 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib</classpathPrefix>
                             <mainClass>org.iMage.iTiler.GUI</mainClass>
+                            <useUniqueVersions>false</useUniqueVersions>
                             <addDefaultImplementationEntries>
                                 true
                             </addDefaultImplementationEntries>
